@@ -63,9 +63,7 @@ Görevin:
             {'type': 'text', 'text': question},
             {
               'type': 'image_url',
-              'image_url': {
-                'url': 'data:image/jpeg;base64,$base64Image',
-              },
+              'image_url': {'url': 'data:image/jpeg;base64,$base64Image'},
             },
           ],
         });
@@ -74,7 +72,7 @@ Görevin:
       }
 
       final body = {
-        'model': 'grok-4.20-latest',
+        'model': 'grok-4-1-fast-reasoning',
         'messages': messages,
         'temperature': 0.7,
         'max_tokens': 1024,
