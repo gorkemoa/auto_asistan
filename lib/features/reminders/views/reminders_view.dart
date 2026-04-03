@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../viewmodels/reminders_viewmodel.dart';
 import '../models/reminder_model.dart';
 import 'add_reminder_view.dart';
@@ -70,7 +71,7 @@ class _RemindersViewState extends State<RemindersView> {
         onPressed: _addReminder,
         backgroundColor: AppColors.warning,
         shape: const CircleBorder(),
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        child: const iconoir.Plus(width: 28, height: 28, color: Colors.white),
       ).animate().scale(delay: 400.ms, duration: 400.ms, curve: Curves.easeOutBack),
       body: ListenableBuilder(
         listenable: _viewModel,
@@ -161,7 +162,7 @@ class _RemindersViewState extends State<RemindersView> {
         color: AppColors.danger,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete_outline_rounded, color: Colors.white),
+        child: const iconoir.Trash(width: 24, height: 24, color: Colors.white),
       ),
       onDismissed: (_) => _viewModel.deleteReminder(reminder.id),
       child: Container(
@@ -186,7 +187,7 @@ class _RemindersViewState extends State<RemindersView> {
                         color: reminder.isCompleted ? statusColor : Colors.transparent,
                       ),
                       child: reminder.isCompleted 
-                        ? const Icon(Icons.check, size: 16, color: Colors.white)
+                        ? const iconoir.Check(width: 16, height: 16, color: Colors.white)
                         : null,
                     ),
                   ),
@@ -212,7 +213,7 @@ class _RemindersViewState extends State<RemindersView> {
                             ),
                             if (reminder.targetDate != null) ...[
                               const SizedBox(width: 8),
-                              const Icon(Icons.calendar_today_rounded, size: 10, color: AppColors.textTertiary),
+                              const iconoir.Calendar(width: 12, height: 12, color: AppColors.textTertiary),
                               const SizedBox(width: 4),
                               Text(
                                 DateFormatter.daysUntilText(reminder.targetDate!),

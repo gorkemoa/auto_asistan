@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_dimensions.dart';
-import '../core/constants/app_strings.dart';
 import '../core/constants/app_typography.dart';
 import '../features/home/views/home_view.dart';
 import '../features/garage/views/garage_view.dart';
@@ -9,6 +8,9 @@ import '../features/expenses/views/expenses_view.dart';
 import '../features/reminders/views/reminders_view.dart';
 import '../features/map/views/map_view.dart';
 import '../features/garage/viewmodels/garage_viewmodel.dart';
+import '../features/settings/views/settings_view.dart';
+import 'dart:ui';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 
 /// Bottom Navigation Shell — ana sayfa container'ı
 class BottomNavShell extends StatefulWidget {
@@ -35,6 +37,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -51,9 +54,10 @@ class _BottomNavShellState extends State<BottomNavShell> {
               return _buildExpensesOrReminders();
             },
           ),
+          const SettingsView(),
         ],
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _buildCustomGlassBar(),
     );
   }
 
@@ -68,13 +72,9 @@ class _BottomNavShellState extends State<BottomNavShell> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text('Aktivite & Finans', style: AppTypography.h2),
-                    IconButton(
-                      icon: const Icon(Icons.more_vert_rounded, color: AppColors.textSecondary),
-                      onPressed: () {},
-                    ),
                   ],
                 ),
               ),
@@ -105,7 +105,9 @@ class _BottomNavShellState extends State<BottomNavShell> {
                     ),
                     labelColor: AppColors.primaryNavy,
                     unselectedLabelColor: AppColors.textSecondary,
-                    labelStyle: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+                    labelStyle: AppTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     unselectedLabelStyle: AppTypography.labelLarge,
                     tabs: const [
                       Tab(text: 'Giderler'),
@@ -130,86 +132,62 @@ class _BottomNavShellState extends State<BottomNavShell> {
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildCustomGlassBar() {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
-        border: Border(
-          top: BorderSide(color: AppColors.surfaceDivider, width: 0.5),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          height: AppDimensions.bottomNavHeight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.home_rounded, Icons.home_outlined,
-                  AppStrings.navHome),
-              _buildNavItem(1, Icons.garage_rounded, Icons.garage_outlined,
-                  AppStrings.navGarage),
-              _buildNavItem(
-                  2, Icons.map_rounded, Icons.map_outlined, AppStrings.navMap),
-              _buildNavItem(
-                  3,
-                  Icons.account_balance_wallet_rounded,
-                  Icons.account_balance_wallet_outlined,
-                  AppStrings.navExpenses),
-            ],
+      height: AppDimensions.bottomNavHeight + MediaQuery.of(context).padding.bottom,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildNavItem(0, iconoir.Home(width: 24, height: 24, color: _currentIndex == 0 ? AppColors.accentBlue : AppColors.textTertiary), 'Ana Sayfa'),
+                _buildNavItem(1, iconoir.Car(width: 24, height: 24, color: _currentIndex == 1 ? AppColors.accentBlue : AppColors.textTertiary), 'Garaj'),
+                _buildNavItem(2, iconoir.MapsArrow(width: 24, height: 24, color: _currentIndex == 2 ? AppColors.accentBlue : AppColors.textTertiary), 'Harita'),
+                _buildNavItem(3, iconoir.Wallet(width: 24, height: 24, color: _currentIndex == 3 ? AppColors.accentBlue : AppColors.textTertiary), 'Giderler'),
+                _buildNavItem(4, iconoir.Settings(width: 24, height: 24, color: _currentIndex == 4 ? AppColors.accentBlue : AppColors.textTertiary), 'Ayarlar'),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(
-    int index,
-    IconData activeIcon,
-    IconData inactiveIcon,
-    String label,
-  ) {
-    final isActive = _currentIndex == index;
-
+  Widget _buildNavItem(int index, Widget icon, String label) {
+    final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => _navigateToTab(index),
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 72,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedContainer(
+            AnimatedScale(
+              scale: isSelected ? 1.1 : 1.0,
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? AppColors.accentBlue.withValues(alpha: 0.12)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-              ),
-              child: Icon(
-                isActive ? activeIcon : inactiveIcon,
-                color:
-                    isActive ? AppColors.accentBlue : AppColors.textTertiary,
-                size: 24,
-              ),
+              child: icon,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color:
-                    isActive ? AppColors.accentBlue : AppColors.textTertiary,
+              style: AppTypography.caption.copyWith(
+                fontSize: 10,
+                color: isSelected ? AppColors.accentBlue : AppColors.textTertiary,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
           ],

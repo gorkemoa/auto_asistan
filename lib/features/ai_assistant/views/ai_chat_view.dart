@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../viewmodels/ai_chat_viewmodel.dart';
 
-import '../widgets/chat_bubble.dart';
 import '../widgets/diagnosis_card.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
+import 'package:flutter_chat_core/flutter_chat_core.dart' as chat_core;
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 
 /// AI Mekanik Asistan chat ekranı
 class AiChatView extends StatefulWidget {
@@ -19,134 +19,186 @@ class AiChatView extends StatefulWidget {
 
 class _AiChatViewState extends State<AiChatView> {
   final _viewModel = AiChatViewModel();
-  final _textController = TextEditingController();
-  final _scrollController = ScrollController();
+  late final chat_core.InMemoryChatController _chatController;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatController = chat_core.InMemoryChatController();
+    _viewModel.addListener(_onViewModelChanged);
+  }
+
+  void _onViewModelChanged() {
+    _chatController.setMessages(_getChatMessages());
+  }
 
   @override
   void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
+    _viewModel.removeListener(_onViewModelChanged);
+    _chatController.dispose();
     super.dispose();
   }
 
-  void _sendMessage() {
-    final text = _textController.text;
-    if (text.trim().isEmpty) return;
 
-    _textController.clear();
-    _viewModel.sendMessage(text);
+  List<chat_core.Message> _getChatMessages() {
+    final mappedMessages = <chat_core.Message>[];
 
-    // Scroll to bottom
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 200,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+    // flutter_chat_ui expects messages in reversed chronological order (newest first).
+    for (int i = 0; i < _viewModel.messages.length; i++) {
+      final msg = _viewModel.messages[i];
+      final authorId = msg.isUser ? '1' : '2';
+      final id = 'msg_$i';
+
+      if (msg.diagnosis != null) {
+        mappedMessages.insert(0, chat_core.Message.custom(
+          id: id,
+          authorId: authorId,
+          createdAt: msg.timestamp,
+          metadata: {
+            'text': msg.content,
+            'diagnosis': msg.diagnosis,
+          },
+        ));
+      } else {
+        mappedMessages.insert(0, chat_core.Message.text(
+          id: id,
+          authorId: authorId,
+          createdAt: msg.timestamp,
+          text: msg.content,
+        ));
       }
-    });
+    }
+
+    // Optional typing indicator message insertion can be manually handled or skipped 
+    // since flutter_chat_ui v2 handles typing users list differently. We will rely on custom builders or skip it.
+    return mappedMessages;
+  }
+
+  Future<chat_core.User> _resolveUser(String id) async {
+    if (id == '1') return const chat_core.User(id: '1', name: 'Siz');
+    return const chat_core.User(id: '2', name: 'AutoAssist AI');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
+      drawer: _buildDrawer(),
+      body: SafeArea(
+        child: Column(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: AppColors.accentGradient,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Builder(
+                builder: (context) => Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      icon: const iconoir.Menu(width: 24, height: 24, color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.accentGradient,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.auto_fix_high_rounded,
+                          color: Colors.white, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(AppStrings.aiAssistant, style: AppTypography.h2),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _viewModel.clearChat();
+                        _chatController.setMessages([]);
+                      },
+                      icon: const iconoir.Refresh(width: 22, height: 22, color: AppColors.textPrimary),
+                      tooltip: 'Sohbeti Temizle',
+                    ),
+                  ],
+                ),
               ),
-              child: const Icon(Icons.auto_fix_high_rounded,
-                  color: Colors.white, size: 18),
             ),
-            const SizedBox(width: 10),
-            Text(AppStrings.aiAssistant, style: AppTypography.h4),
+            Expanded(
+              child: ListenableBuilder(
+                listenable: _viewModel,
+                builder: (context, _) {
+                  if (_viewModel.isLoadingSessions) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return chat_ui.Chat(
+                    currentUserId: '1',
+                    chatController: _chatController,
+                    resolveUser: _resolveUser,
+                    theme: chat_core.ChatTheme(
+                      colors: chat_core.ChatColors(
+                        primary: AppColors.accentBlue,
+                        onPrimary: Colors.white,
+                        surface: AppColors.surfaceLight,
+                        onSurface: AppColors.textPrimary,
+                        surfaceContainer: AppColors.surfaceCard,
+                        surfaceContainerLow: AppColors.surfaceLight,
+                        surfaceContainerHigh: AppColors.surfaceDivider,
+                      ),
+                      typography: chat_core.ChatTypography.standard(),
+                      shape: const BorderRadius.all(Radius.circular(16)),
+                    ),
+                    onMessageSend: (text) {
+                      _viewModel.sendMessage(text);
+                    },
+                    builders: chat_core.Builders(
+                      customMessageBuilder: (context, message, index,
+                          {required bool isSentByMe,
+                          chat_core.MessageGroupStatus? groupStatus}) {
+                        final txt = message.metadata?['text'] as String?;
+                        final dia = message.metadata?['diagnosis'];
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 12),
+                          child: Column(
+                            crossAxisAlignment: isSentByMe
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              if (txt != null && txt.isNotEmpty)
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isSentByMe
+                                        ? AppColors.accentBlue
+                                        : AppColors.surfaceCard,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    txt,
+                                    style: TextStyle(
+                                      color: isSentByMe
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              if (dia != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: DiagnosisCard(diagnosis: dia),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: _viewModel.clearChat,
-            icon: const Icon(Icons.refresh_rounded, size: 22),
-            tooltip: 'Sohbeti Temizle',
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      drawer: _buildDrawer(),
-      body: ListenableBuilder(
-        listenable: _viewModel,
-        builder: (context, _) {
-          return _viewModel.isLoadingSessions
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    // Sorumluluk reddi
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.warningLight,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline_rounded,
-                              size: 16, color: AppColors.warning),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              AppStrings.aiDisclaimer,
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.textPrimary,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Mesajlar
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        itemCount: _viewModel.messages.length +
-                            (_viewModel.isTyping ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          // Typing indicator
-                          if (index == _viewModel.messages.length &&
-                              _viewModel.isTyping) {
-                            return _buildTypingIndicator();
-                          }
-
-                          final message = _viewModel.messages[index];
-                          return Column(
-                            children: [
-                              ChatBubble(message: message),
-                              if (message.diagnosis != null)
-                                DiagnosisCard(diagnosis: message.diagnosis!),
-                              const SizedBox(height: 8),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-
-                    // Giriş alanı
-                    _buildInputArea(),
-                  ],
-                );
-        },
       ),
     );
   }
@@ -223,103 +275,6 @@ class _AiChatViewState extends State<AiChatView> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTypingIndicator() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceCard,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-          border: Border.all(color: AppColors.surfaceDivider, width: 0.5),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildDot(0),
-            const SizedBox(width: 4),
-            _buildDot(200),
-            const SizedBox(width: 4),
-            _buildDot(400),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDot(int delayMs) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: AppColors.textTertiary,
-        shape: BoxShape.circle,
-      ),
-    )
-        .animate(onPlay: (c) => c.repeat())
-        .fadeIn(delay: Duration(milliseconds: delayMs))
-        .then()
-        .fadeOut()
-        .then()
-        .fadeIn();
-  }
-
-  Widget _buildInputArea() {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 8,
-        top: 12,
-        bottom: MediaQuery.of(context).padding.bottom + 12,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
-        border: Border(
-          top: BorderSide(color: AppColors.surfaceDivider, width: 0.5),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: AppStrings.aiHint,
-                hintStyle: AppTypography.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: AppColors.surfaceLight,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              style: AppTypography.bodyMedium,
-              maxLines: 4,
-              minLines: 1,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _sendMessage(),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              gradient: AppColors.accentGradient,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: _sendMessage,
-              icon: const Icon(Icons.send_rounded,
-                  color: Colors.white, size: 20),
-            ),
-          ),
-        ],
       ),
     );
   }

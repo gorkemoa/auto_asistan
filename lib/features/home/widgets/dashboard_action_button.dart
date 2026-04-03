@@ -4,14 +4,16 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/widgets/auto_card.dart';
 
 class DashboardActionButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? iconWidget;
   final String label;
   final VoidCallback onTap;
   final Color? iconColor;
 
   const DashboardActionButton({
     super.key,
-    required this.icon,
+    this.icon,
+    this.iconWidget,
     required this.label,
     required this.onTap,
     this.iconColor,
@@ -25,7 +27,7 @@ class DashboardActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            Icon(icon, color: iconColor ?? AppColors.primaryNavy, size: 28),
+            iconWidget ?? Icon(icon, color: iconColor ?? AppColors.primaryNavy, size: 28),
             const SizedBox(height: 8),
             Text(
               label,

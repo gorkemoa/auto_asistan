@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,18 +29,22 @@ class _MapViewState extends State<MapView> {
     {
       'key': 'all',
       'label': AppStrings.allCategories,
-      'icon': Icons.apps_rounded,
+      'icon': const iconoir.ViewGrid(width: 16, height: 16),
     },
     {
       'key': 'car_repair',
       'label': AppStrings.autoRepair,
-      'icon': Icons.build_rounded,
+      'icon': const iconoir.Wrench(width: 16, height: 16),
     },
-    {'key': 'fuel', 'label': 'Yakıt', 'icon': Icons.local_gas_station_rounded},
+    {
+      'key': 'fuel',
+      'label': 'Yakıt',
+      'icon': const iconoir.GasTank(width: 16, height: 16),
+    },
     {
       'key': 'inspection',
       'label': AppStrings.inspectionStation,
-      'icon': Icons.fact_check_rounded,
+      'icon': const iconoir.CheckCircle(width: 16, height: 16),
     },
   ];
 
@@ -159,10 +164,10 @@ class _MapViewState extends State<MapView> {
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              Icons.build_rounded,
+                            child: const iconoir.Wrench(
                               color: Colors.white,
-                              size: 18,
+                              width: 18,
+                              height: 18,
                             ),
                           ),
                         ),
@@ -192,12 +197,9 @@ class _MapViewState extends State<MapView> {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              filter['icon'] as IconData,
-                              size: 16,
-                              color: isSelected
-                                  ? AppColors.accentBlue
-                                  : AppColors.textSecondary,
+                            _buildFilterIcon(
+                              filter['icon'] as Widget,
+                              isSelected,
                             ),
                             const SizedBox(width: 6),
                             Text(filter['label'] as String),
@@ -240,6 +242,38 @@ class _MapViewState extends State<MapView> {
         },
       ),
     );
+  }
+
+  Widget _buildFilterIcon(Widget icon, bool isSelected) {
+    if (icon is iconoir.ViewGrid) {
+      return iconoir.ViewGrid(
+        width: 16,
+        height: 16,
+        color: isSelected ? AppColors.accentBlue : AppColors.textSecondary,
+      );
+    }
+    if (icon is iconoir.Wrench) {
+      return iconoir.Wrench(
+        width: 16,
+        height: 16,
+        color: isSelected ? AppColors.accentBlue : AppColors.textSecondary,
+      );
+    }
+    if (icon is iconoir.GasTank) {
+      return iconoir.GasTank(
+        width: 16,
+        height: 16,
+        color: isSelected ? AppColors.accentBlue : AppColors.textSecondary,
+      );
+    }
+    if (icon is iconoir.CheckCircle) {
+      return iconoir.CheckCircle(
+        width: 16,
+        height: 16,
+        color: isSelected ? AppColors.accentBlue : AppColors.textSecondary,
+      );
+    }
+    return icon;
   }
 
   Widget _buildPlaceCard(PlaceModel place) {

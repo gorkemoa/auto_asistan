@@ -271,7 +271,7 @@ packages:
     source: hosted
     version: "4.5.2"
   flutter_chat_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_chat_core
       sha256: "8c46790f64f106bf6e610e2a7324b3844320e9e295867c06d45d9deb134d848d"
@@ -653,22 +653,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
-  liquid_glass_bar:
-    dependency: "direct main"
-    description:
-      name: liquid_glass_bar
-      sha256: "39393c819b3816f9fec9eae2535bd08aed3d1597bae816ed0fb7c0de74569aaa"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1"
-  liquid_glass_renderer:
-    dependency: transitive
-    description:
-      name: liquid_glass_renderer
-      sha256: "789be157494b38cdef7607bb9b63e7fe3fab76fae16149e52fa313c2d858cb3f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0-dev.4"
   lists:
     dependency: transitive
     description:
@@ -733,14 +717,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  motor:
-    dependency: transitive
-    description:
-      name: motor
-      sha256: cbd49f21b00e568c2b1a55f134ed803614a107782f4fea7769693bca32940c58
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   native_toolchain_c:
     dependency: transitive
     description:

@@ -4,8 +4,10 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../viewmodels/expenses_viewmodel.dart';
 import 'add_expense_view.dart';
+import '../models/expense_model.dart';
 
 /// Finans ve Gider Takibi Ekranı — TODOIST Style Minimal Tasarım
 class ExpensesView extends StatefulWidget {
@@ -54,25 +56,42 @@ class _ExpensesViewState extends State<ExpensesView> {
 
   Color _getCategoryColor(String category) {
     switch (category) {
-      case 'yakit': return AppColors.expenseFuel;
-      case 'bakim': return AppColors.expenseMaintenance;
+      case 'yakit':
+        return AppColors.expenseFuel;
+      case 'bakim':
+        return AppColors.expenseMaintenance;
       case 'sigorta':
-      case 'kasko': return AppColors.expenseInsurance;
-      case 'yikama': return AppColors.expenseWash;
-      case 'otopark': return AppColors.expenseParking;
-      default: return AppColors.expenseOther;
+      case 'kasko':
+        return AppColors.expenseInsurance;
+      case 'yikama':
+        return AppColors.expenseWash;
+      case 'otopark':
+        return AppColors.expenseParking;
+      default:
+        return AppColors.expenseOther;
     }
   }
 
-  IconData _getCategoryIcon(String category) {
+  Widget _getCategoryIcon(
+    String category, {
+    double size = 20,
+    Color color = AppColors.textPrimary,
+  }) {
     switch (category) {
-      case 'yakit': return Icons.local_gas_station_rounded;
-      case 'bakim': return Icons.build_rounded;
-      case 'sigorta': return Icons.security_rounded;
-      case 'kasko': return Icons.shield_rounded;
-      case 'yikama': return Icons.local_car_wash_rounded;
-      case 'otopark': return Icons.local_parking_rounded;
-      default: return Icons.more_horiz_rounded;
+      case 'yakit':
+        return iconoir.GasTank(width: size, height: size, color: color);
+      case 'bakim':
+        return iconoir.Wrench(width: size, height: size, color: color);
+      case 'sigorta':
+        return iconoir.Shield(width: size, height: size, color: color);
+      case 'kasko':
+        return iconoir.ShieldCheck(width: size, height: size, color: color);
+      case 'yikama':
+        return iconoir.Droplet(width: size, height: size, color: color);
+      case 'otopark':
+        return iconoir.Parking(width: size, height: size, color: color);
+      default:
+        return iconoir.MoreHoriz(width: size, height: size, color: color);
     }
   }
 
@@ -80,12 +99,21 @@ class _ExpensesViewState extends State<ExpensesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addExpense,
-        backgroundColor: AppColors.primaryNavy,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
-      ).animate().scale(delay: 400.ms, duration: 400.ms, curve: Curves.easeOutBack),
+      floatingActionButton:
+          FloatingActionButton(
+            onPressed: _addExpense,
+            backgroundColor: AppColors.primaryNavy,
+            shape: const CircleBorder(),
+            child: const iconoir.Plus(
+              width: 28,
+              height: 28,
+              color: Colors.white,
+            ),
+          ).animate().scale(
+            delay: 400.ms,
+            duration: 400.ms,
+            curve: Curves.easeOutBack,
+          ),
       body: ListenableBuilder(
         listenable: _viewModel,
         builder: (context, _) {
@@ -110,9 +138,15 @@ class _ExpensesViewState extends State<ExpensesView> {
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                   child: Row(
                     children: [
-                      _buildSummaryChip('Bu Ay', CurrencyFormatter.format(_viewModel.monthlyTotal)),
+                      _buildSummaryChip(
+                        'Bu Ay',
+                        CurrencyFormatter.format(_viewModel.monthlyTotal),
+                      ),
                       const SizedBox(width: 12),
-                      _buildSummaryChip('Toplam', CurrencyFormatter.format(_viewModel.totalExpenses)),
+                      _buildSummaryChip(
+                        'Toplam',
+                        CurrencyFormatter.format(_viewModel.totalExpenses),
+                      ),
                     ],
                   ),
                 ),
@@ -123,12 +157,13 @@ class _ExpensesViewState extends State<ExpensesView> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildExpenseItem(_viewModel.expenses[index], index),
+                    (context, index) =>
+                        _buildExpenseItem(_viewModel.expenses[index], index),
                     childCount: _viewModel.expenses.length,
                   ),
                 ),
               ),
-              
+
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           );
@@ -149,24 +184,34 @@ class _ExpensesViewState extends State<ExpensesView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTypography.caption.copyWith(fontSize: 10, fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              style: AppTypography.caption.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 4),
-            FittedBox(child: Text(value, style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w800))),
+            FittedBox(
+              child: Text(
+                value,
+                style: AppTypography.labelLarge.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildExpenseItem(expense, int index) {
+  Widget _buildExpenseItem(ExpenseModel expense, int index) {
     final color = _getCategoryColor(expense.category);
-    final icon = _getCategoryIcon(expense.category);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Column(
         children: [
           Padding(
@@ -180,17 +225,29 @@ class _ExpensesViewState extends State<ExpensesView> {
                     color: color.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 18),
+                  child: _getCategoryIcon(
+                    expense.category,
+                    size: 18,
+                    color: color,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(expense.categoryDisplayName, style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        expense.categoryDisplayName,
+                        style: AppTypography.labelMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       Text(
                         '${expense.date.day} ${_monthName(expense.date.month)}',
-                        style: AppTypography.caption.copyWith(fontSize: 11, color: AppColors.textTertiary),
+                        style: AppTypography.caption.copyWith(
+                          fontSize: 11,
+                          color: AppColors.textTertiary,
+                        ),
                       ),
                     ],
                   ),
@@ -200,9 +257,12 @@ class _ExpensesViewState extends State<ExpensesView> {
                   children: [
                     Text(
                       CurrencyFormatter.format(expense.amount),
-                      style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w700),
+                      style: AppTypography.labelMedium.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    if (expense.description != null && expense.description!.isNotEmpty)
+                    if (expense.description != null &&
+                        expense.description!.isNotEmpty)
                       Text(
                         expense.description!,
                         style: AppTypography.caption.copyWith(fontSize: 10),
@@ -223,7 +283,11 @@ class _ExpensesViewState extends State<ExpensesView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.inventory_2_outlined, size: 48, color: AppColors.textTertiary.withValues(alpha: 0.3)),
+          iconoir.EmptyPage(
+            width: 48,
+            height: 48,
+            color: AppColors.textTertiary.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('Henüz gider yok', style: AppTypography.caption),
         ],
@@ -232,7 +296,20 @@ class _ExpensesViewState extends State<ExpensesView> {
   }
 
   String _monthName(int month) {
-    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const months = [
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
+    ];
     return months[month - 1];
   }
 }

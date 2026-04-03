@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/widgets/auto_button.dart';
 import '../../../core/utils/validators.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../models/expense_model.dart';
 
 /// Gider Ekleme Formu — Premium Minimal Tasarım (Todoist Inspired)
@@ -78,25 +79,42 @@ class _AddExpenseViewState extends State<AddExpenseView> {
 
   Color _getCategoryColor(String key) {
     switch (key) {
-      case 'yakit': return AppColors.expenseFuel;
-      case 'bakim': return AppColors.expenseMaintenance;
+      case 'yakit':
+        return AppColors.expenseFuel;
+      case 'bakim':
+        return AppColors.expenseMaintenance;
       case 'sigorta':
-      case 'kasko': return AppColors.expenseInsurance;
-      case 'yikama': return AppColors.expenseWash;
-      case 'otopark': return AppColors.expenseParking;
-      default: return AppColors.expenseOther;
+      case 'kasko':
+        return AppColors.expenseInsurance;
+      case 'yikama':
+        return AppColors.expenseWash;
+      case 'otopark':
+        return AppColors.expenseParking;
+      default:
+        return AppColors.expenseOther;
     }
   }
 
-  IconData _getCategoryIcon(String key) {
-    switch (key) {
-      case 'yakit': return Icons.local_gas_station_rounded;
-      case 'bakim': return Icons.build_rounded;
-      case 'sigorta': return Icons.security_rounded;
-      case 'kasko': return Icons.shield_rounded;
-      case 'yikama': return Icons.local_car_wash_rounded;
-      case 'otopark': return Icons.local_parking_rounded;
-      default: return Icons.more_horiz_rounded;
+  Widget _getCategoryIcon(
+    String category, {
+    double size = 22,
+    Color color = AppColors.textPrimary,
+  }) {
+    switch (category) {
+      case 'yakit':
+        return iconoir.GasTank(width: size, height: size, color: color);
+      case 'bakim':
+        return iconoir.Wrench(width: size, height: size, color: color);
+      case 'sigorta':
+        return iconoir.Shield(width: size, height: size, color: color);
+      case 'kasko':
+        return iconoir.ShieldCheck(width: size, height: size, color: color);
+      case 'yikama':
+        return iconoir.Droplet(width: size, height: size, color: color);
+      case 'otopark':
+        return iconoir.Parking(width: size, height: size, color: color);
+      default:
+        return iconoir.MoreHoriz(width: size, height: size, color: color);
     }
   }
 
@@ -110,7 +128,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
         centerTitle: true,
         title: Text('Yeni Gider Ekle', style: AppTypography.h4),
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+          icon: const iconoir.Xmark(
+            width: 24,
+            height: 24,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -125,7 +147,7 @@ class _AddExpenseViewState extends State<AddExpenseView> {
               _buildSectionTitle('Harcalama Kategorisi'),
               const SizedBox(height: 12),
               _buildCategorySelectBox(),
-              
+
               const SizedBox(height: 32),
               _buildSectionTitle('Gider Detayları'),
               const SizedBox(height: 12),
@@ -141,7 +163,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
               AutoButton(
                 label: 'Harcamayı Kaydet',
                 onPressed: _handleSave,
-                icon: Icons.check_circle_rounded,
+                iconWidget: const iconoir.CheckCircle(
+                  width: 22,
+                  height: 22,
+                  color: Colors.white,
+                ),
                 color: AppColors.primaryNavy,
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
             ],
@@ -152,7 +178,10 @@ class _AddExpenseViewState extends State<AddExpenseView> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(title, style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w800));
+    return Text(
+      title,
+      style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w800),
+    );
   }
 
   Widget _buildFormContainer(List<Widget> children) {
@@ -174,13 +203,18 @@ class _AddExpenseViewState extends State<AddExpenseView> {
   }
 
   Widget _buildDivider() {
-    return const Divider(height: 1, indent: 55, color: AppColors.surfaceDivider);
+    return const Divider(
+      height: 1,
+      indent: 55,
+      color: AppColors.surfaceDivider,
+    );
   }
 
   Widget _buildCategorySelectBox() {
     final color = _getCategoryColor(_selectedCategory);
-    final icon = _getCategoryIcon(_selectedCategory);
-    final label = ExpenseModel.categories.firstWhere((c) => c['key'] == _selectedCategory)['label']!;
+    final label = ExpenseModel.categories.firstWhere(
+      (c) => c['key'] == _selectedCategory,
+    )['label']!;
 
     return InkWell(
       onTap: _showCategoryPicker,
@@ -207,7 +241,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                 color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 22),
+              child: _getCategoryIcon(
+                _selectedCategory,
+                size: 22,
+                color: color,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -215,11 +253,20 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Seçili Kategori', style: AppTypography.caption),
-                  Text(label, style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    label,
+                    style: AppTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.unfold_more_rounded, color: AppColors.textTertiary),
+            const iconoir.NavArrowDown(
+              width: 20,
+              height: 20,
+              color: AppColors.textTertiary,
+            ),
           ],
         ),
       ),
@@ -266,7 +313,6 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                     final key = cat['key']!;
                     final isSelected = _selectedCategory == key;
                     final color = _getCategoryColor(key);
-                    final icon = _getCategoryIcon(key);
 
                     return GestureDetector(
                       onTap: () {
@@ -275,24 +321,38 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
+                          color: isSelected
+                              ? color.withValues(alpha: 0.1)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isSelected ? color : AppColors.surfaceDivider,
+                            color: isSelected
+                                ? color
+                                : AppColors.surfaceDivider,
                             width: isSelected ? 2 : 0.5,
                           ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(icon, color: isSelected ? color : AppColors.textTertiary, size: 28),
+                            _getCategoryIcon(
+                              key,
+                              size: 28,
+                              color: isSelected
+                                  ? color
+                                  : AppColors.textTertiary,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               cat['label']!,
                               textAlign: TextAlign.center,
                               style: AppTypography.caption.copyWith(
-                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                                color: isSelected ? color : AppColors.textSecondary,
+                                fontWeight: isSelected
+                                    ? FontWeight.w800
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? color
+                                    : AppColors.textSecondary,
                                 fontSize: 11,
                               ),
                             ),
@@ -319,7 +379,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
         style: AppTypography.h3,
         validator: (v) => Validators.number(v, 'Tutar'),
         decoration: InputDecoration(
-          icon: const Icon(Icons.payments_rounded, color: AppColors.accentBlue),
+          icon: const iconoir.Wallet(
+            width: 22,
+            height: 22,
+            color: AppColors.accentBlue,
+          ),
           hintText: '0.00 ₺',
           labelText: 'Tutar',
           labelStyle: AppTypography.caption,
@@ -338,7 +402,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_rounded, color: AppColors.textTertiary, size: 20),
+            const iconoir.Calendar(
+              width: 20,
+              height: 20,
+              color: AppColors.textTertiary,
+            ),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -347,12 +415,18 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                   Text('Tarih', style: AppTypography.caption),
                   Text(
                     '${_selectedDate.day} ${_monthName(_selectedDate.month)} ${_selectedDate.year}',
-                    style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600),
+                    style: AppTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textTertiary),
+            const iconoir.NavArrowRight(
+              width: 14,
+              height: 14,
+              color: AppColors.textTertiary,
+            ),
           ],
         ),
       ),
@@ -366,7 +440,11 @@ class _AddExpenseViewState extends State<AddExpenseView> {
         controller: _descriptionController,
         maxLines: 2,
         decoration: InputDecoration(
-          icon: const Icon(Icons.notes_rounded, color: AppColors.textTertiary),
+          icon: const iconoir.Notes(
+            width: 20,
+            height: 20,
+            color: AppColors.textTertiary,
+          ),
           hintText: 'Açıklama veya not ekle...',
           hintStyle: AppTypography.caption,
           labelText: 'Notlar (İsteğe Bağlı)',
@@ -380,7 +458,20 @@ class _AddExpenseViewState extends State<AddExpenseView> {
   }
 
   String _monthName(int month) {
-    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const months = [
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
+    ];
     return months[month - 1];
   }
 }

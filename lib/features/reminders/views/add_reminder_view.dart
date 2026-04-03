@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/widgets/auto_button.dart';
 import '../../../core/utils/validators.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../models/reminder_model.dart';
 
 /// Hatırlatma Ekleme Formu — Premium Minimal Tasarım (Todoist Inspired)
@@ -86,13 +87,13 @@ class _AddReminderViewState extends State<AddReminderView> {
     }
   }
 
-  IconData _getTypeIcon(String key) {
+  Widget _getTypeIcon(String key, {double size = 22, Color color = AppColors.textPrimary}) {
     switch (key) {
-      case 'muayene': return Icons.fact_check_rounded;
-      case 'sigorta': return Icons.security_rounded;
-      case 'kasko': return Icons.shield_rounded;
-      case 'bakim': return Icons.build_circle_rounded;
-      default: return Icons.notifications_active_rounded;
+      case 'muayene': return iconoir.CheckCircle(width: size, height: size, color: color);
+      case 'sigorta': return iconoir.Shield(width: size, height: size, color: color);
+      case 'kasko': return iconoir.ShieldCheck(width: size, height: size, color: color);
+      case 'bakim': return iconoir.Wrench(width: size, height: size, color: color);
+      default: return iconoir.Bell(width: size, height: size, color: color);
     }
   }
 
@@ -106,7 +107,7 @@ class _AddReminderViewState extends State<AddReminderView> {
         centerTitle: true,
         title: Text('Yeni Hatırlatıcı', style: AppTypography.h4),
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+          icon: const iconoir.Xmark(width: 24, height: 24, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -137,7 +138,7 @@ class _AddReminderViewState extends State<AddReminderView> {
               AutoButton(
                 label: 'Planı Oluştur',
                 onPressed: _handleSave,
-                icon: Icons.notifications_active_rounded,
+                iconWidget: const iconoir.Bell(width: 22, height: 22, color: Colors.white),
                 color: AppColors.warning,
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
             ],
@@ -175,7 +176,6 @@ class _AddReminderViewState extends State<AddReminderView> {
 
   Widget _buildTypeSelectBox() {
     final color = _getTypeColor(_selectedType);
-    final icon = _getTypeIcon(_selectedType);
     final label = ReminderModel.types.firstWhere((t) => t['key'] == _selectedType)['label']!;
 
     return InkWell(
@@ -196,7 +196,7 @@ class _AddReminderViewState extends State<AddReminderView> {
                 color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 22),
+              child: _getTypeIcon(_selectedType, size: 22, color: color),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -208,7 +208,7 @@ class _AddReminderViewState extends State<AddReminderView> {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_drop_down_rounded, color: AppColors.textTertiary, size: 30),
+            const iconoir.NavArrowDown(width: 20, height: 20, color: AppColors.textTertiary),
           ],
         ),
       ),
@@ -244,13 +244,12 @@ class _AddReminderViewState extends State<AddReminderView> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: ReminderModel.types.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final type = ReminderModel.types[index];
                     final key = type['key']!;
                     final isSelected = _selectedType == key;
                     final color = _getTypeColor(key);
-                    final icon = _getTypeIcon(key);
 
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(vertical: 4),
@@ -260,7 +259,7 @@ class _AddReminderViewState extends State<AddReminderView> {
                           color: color.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(icon, color: color, size: 20),
+                        child: _getTypeIcon(key, size: 20, color: color),
                       ),
                       title: Text(
                         type['label']!,
@@ -269,7 +268,7 @@ class _AddReminderViewState extends State<AddReminderView> {
                         ),
                       ),
                       trailing: isSelected 
-                        ? Icon(Icons.check_circle_rounded, color: color) 
+                        ? iconoir.CheckCircle(width: 20, height: 20, color: color) 
                         : null,
                       onTap: () {
                         setState(() => _selectedType = key);
@@ -294,7 +293,7 @@ class _AddReminderViewState extends State<AddReminderView> {
         style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600),
         validator: (v) => Validators.required(v, 'Açıklama'),
         decoration: InputDecoration(
-          icon: const Icon(Icons.edit_note_rounded, color: AppColors.warning),
+          icon: const iconoir.Notes(width: 20, height: 20, color: AppColors.warning),
           hintText: 'Örn: 10.000 KM Bakımı',
           labelText: 'Plan Başlığı',
           labelStyle: AppTypography.caption,
@@ -313,7 +312,7 @@ class _AddReminderViewState extends State<AddReminderView> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
-            const Icon(Icons.event_available_rounded, color: AppColors.textTertiary, size: 20),
+            const iconoir.Calendar(width: 20, height: 20, color: AppColors.textTertiary),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -332,7 +331,7 @@ class _AddReminderViewState extends State<AddReminderView> {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textTertiary),
+            const iconoir.NavArrowRight(width: 14, height: 14, color: AppColors.textTertiary),
           ],
         ),
       ),
@@ -346,7 +345,7 @@ class _AddReminderViewState extends State<AddReminderView> {
         controller: _targetKmController,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          icon: const Icon(Icons.speed_rounded, color: AppColors.textTertiary),
+          icon: const iconoir.Dashboard(width: 20, height: 20, color: AppColors.textTertiary),
           hintText: 'Örn: 45000',
           labelText: 'Hedef Kilometre (İsteğe Bağlı)',
           labelStyle: AppTypography.caption,

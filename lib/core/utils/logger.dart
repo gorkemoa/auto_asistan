@@ -19,12 +19,11 @@ class AppLogger {
   static void error(String message, [Object? error, StackTrace? stackTrace]) {
     _log('error', message);
     if (error != null) {
-      // debugPrint yerine direkt print kullanarak konsolda kesin görünmesini sağlıyoruz
-      print('[$_tag] 🚨 KRİTİK HATA: $error');
+      debugPrint('[$_tag] 🚨 KRİTİK HATA: $error');
       dev.log(message, name: _tag, error: error, stackTrace: stackTrace, level: 1000);
     }
     if (stackTrace != null && kDebugMode) {
-      print('[$_tag] 📜 STACK TRACE: $stackTrace');
+      debugPrint('[$_tag] 📜 STACK TRACE: $stackTrace');
     }
   }
 

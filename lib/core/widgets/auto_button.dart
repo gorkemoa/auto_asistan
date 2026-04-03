@@ -10,6 +10,7 @@ class AutoButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final AutoButtonVariant variant;
+  final Widget? iconWidget;
   final IconData? icon;
   final bool isLoading;
   final bool isFullWidth;
@@ -21,6 +22,7 @@ class AutoButton extends StatelessWidget {
     required this.label,
     this.onPressed,
     this.variant = AutoButtonVariant.primary,
+    this.iconWidget,
     this.icon,
     this.isLoading = false,
     this.isFullWidth = true,
@@ -143,11 +145,14 @@ class AutoButton extends StatelessWidget {
       );
     }
 
-    if (icon != null) {
+    if (iconWidget != null || icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20),
+          if (iconWidget != null)
+            iconWidget!
+          else if (icon != null)
+            Icon(icon, size: 20),
           const SizedBox(width: 8),
           Text(label, style: AppTypography.buttonMedium.copyWith(color: color)),
         ],

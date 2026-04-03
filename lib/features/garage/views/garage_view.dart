@@ -58,36 +58,47 @@ class _GarageViewState extends State<GarageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.myGarage, style: AppTypography.h3),
-        actions: [
-          IconButton(
-            onPressed: _openAddVehicle,
-            icon: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: AppColors.accentBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppDimensions.pagePaddingH, 16, AppDimensions.pagePaddingH, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(AppStrings.myGarage, style: AppTypography.h2),
+                  IconButton(
+                    onPressed: _openAddVehicle,
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentBlue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                      ),
+                      child: const Icon(Icons.add_rounded, color: AppColors.accentBlue, size: 24),
+                    ),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.add_rounded, color: AppColors.accentBlue, size: 20),
             ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: ListenableBuilder(
-        listenable: _viewModel,
-        builder: (context, _) {
-          if (_viewModel.isLoading) {
-            return const LoadingIndicator(message: 'Araçlar yükleniyor...');
-          }
+            Expanded(
+              child: ListenableBuilder(
+                listenable: _viewModel,
+                builder: (context, _) {
+                  if (_viewModel.isLoading) {
+                    return const LoadingIndicator(message: 'Araçlar yükleniyor...');
+                  }
 
-          if (!_viewModel.hasVehicles) {
-            return _buildEmptyState();
-          }
+                  if (!_viewModel.hasVehicles) {
+                    return _buildEmptyState();
+                  }
 
-          return _buildVehicleList();
-        },
+                  return _buildVehicleList();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

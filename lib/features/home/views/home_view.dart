@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
@@ -53,72 +54,47 @@ class _HomeViewState extends State<HomeView> {
                 return const LoadingIndicator(message: AppStrings.loading);
               }
 
-              return RefreshIndicator(
-                onRefresh: _viewModel.loadDashboard,
-                color: AppColors.accentBlue,
-                child: CustomScrollView(
-                  slivers: [
-                    _buildAppBar(),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppDimensions.pagePaddingH,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment
-                              .start, // Card looks better with start alignment
-                          children: [
-                            const SizedBox(height: AppDimensions.spacing16),
-                            if (_viewModel.garageVM.hasVehicles) ...[
-                              _buildVehicleSelector(),
+              return SafeArea(
+                bottom: false,
+                child: RefreshIndicator(
+                  onRefresh: _viewModel.loadDashboard,
+                  color: AppColors.accentBlue,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.pagePaddingH,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment
+                                .start, // Card looks better with start alignment
+                            children: [
+                              const SizedBox(height: AppDimensions.spacing16),
+                              if (_viewModel.garageVM.hasVehicles) ...[
+                                _buildVehicleSelector(),
+                                const SizedBox(height: AppDimensions.spacing32),
+                                _buildQuickActions(),
+                                const SizedBox(height: AppDimensions.spacing32),
+                                _buildRecentExpensesSection(),
+                                const SizedBox(height: AppDimensions.spacing32),
+                                _buildRemindersSection(),
+                              ] else ...[
+                                _buildWelcomeCard(),
+                              ],
                               const SizedBox(height: AppDimensions.spacing32),
-                              _buildQuickActions(),
-                              const SizedBox(height: AppDimensions.spacing32),
-                              _buildRecentExpensesSection(),
-                              const SizedBox(height: AppDimensions.spacing32),
-                              _buildRemindersSection(),
-                            ] else ...[
-                              _buildWelcomeCard(),
                             ],
-                            const SizedBox(height: AppDimensions.spacing32),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
       ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return SliverAppBar(
-      expandedHeight: 60,
-      floating: true,
-      pinned: false,
-      elevation: 0,
-      backgroundColor: AppColors.surfaceLight,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.chevron_left_rounded,
-          color: AppColors.textPrimary,
-        ),
-        onPressed: () {}, // Navigation usually handled by parent
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.more_horiz_rounded,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: () => _showVehicleSwitcher(),
-        ),
-        const SizedBox(width: 8),
-      ],
     );
   }
 
@@ -223,9 +199,12 @@ class _HomeViewState extends State<HomeView> {
     return Row(
       children: [
         DashboardActionButton(
-          icon: Icons.auto_fix_high_rounded,
+          iconWidget: const iconoir.Spark(
+            width: 28,
+            height: 28,
+            color: AppColors.accentBlue,
+          ),
           label: AppStrings.navAI,
-          iconColor: AppColors.accentBlue,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const AiChatView()),
@@ -233,9 +212,12 @@ class _HomeViewState extends State<HomeView> {
         ),
         const SizedBox(width: 12),
         DashboardActionButton(
-          icon: Icons.map_rounded,
+          iconWidget: const iconoir.MapsArrow(
+            width: 28,
+            height: 28,
+            color: AppColors.accentTeal,
+          ),
           label: AppStrings.map,
-          iconColor: AppColors.accentTeal,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const MapView()),
@@ -243,9 +225,12 @@ class _HomeViewState extends State<HomeView> {
         ),
         const SizedBox(width: 12),
         DashboardActionButton(
-          icon: Icons.add_rounded,
+          iconWidget: const iconoir.Plus(
+            width: 28,
+            height: 28,
+            color: AppColors.primaryNavy,
+          ),
           label: AppStrings.addExpense,
-          iconColor: AppColors.primaryNavy,
           onTap: () {
             final vehicleId = _viewModel.garageVM.selectedVehicle?.id;
             if (vehicleId != null) {
@@ -318,7 +303,7 @@ class _HomeViewState extends State<HomeView> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: expenses.length,
-                  separatorBuilder: (_, __) => const Divider(
+                  separatorBuilder: (_, _) => const Divider(
                     height: 1,
                     color: AppColors.surfaceDivider,
                     indent: 64,
@@ -336,24 +321,24 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildDynamicExpenseRow(ExpenseModel expense) {
-    IconData icon;
+    Widget icon;
     Color color;
     switch (expense.category) {
       case 'yakit':
-        icon = Icons.local_gas_station_rounded;
+        icon = iconoir.GasTank(width: 20, height: 20, color: AppColors.expenseFuel);
         color = AppColors.expenseFuel;
         break;
       case 'bakim':
-        icon = Icons.build_rounded;
+        icon = iconoir.Wrench(width: 20, height: 20, color: AppColors.expenseMaintenance);
         color = AppColors.expenseMaintenance;
         break;
       case 'sigorta':
       case 'kasko':
-        icon = Icons.shield_rounded;
+        icon = iconoir.Shield(width: 20, height: 20, color: AppColors.expenseInsurance);
         color = AppColors.expenseInsurance;
         break;
       default:
-        icon = Icons.receipt_rounded;
+        icon = iconoir.Reports(width: 20, height: 20, color: AppColors.expenseOther);
         color = AppColors.expenseOther;
     }
 
@@ -367,7 +352,7 @@ class _HomeViewState extends State<HomeView> {
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: icon,
       ),
       title: Text(
         expense.categoryDisplayName,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
@@ -131,23 +132,9 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
       hasBorder: false,
       child: Row(
         children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-            ),
-            child: const Icon(
-              Icons.directions_car_filled_rounded,
-              color: Colors.white,
-              size: 36,
-            ),
-          ),
-          const SizedBox(width: AppDimensions.spacing16),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   _vehicle.displayName,
@@ -190,18 +177,26 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
 
   Widget _buildInfoGrid() {
     final items = [
-      _InfoItem(Icons.calendar_today_rounded, 'Yıl', '${_vehicle.year}'),
       _InfoItem(
-        Icons.local_gas_station_rounded,
+        iconoir.Calendar(width: 20, height: 20, color: AppColors.accentBlue),
+        'Yıl',
+        '${_vehicle.year}',
+      ),
+      _InfoItem(
+        iconoir.GasTank(width: 20, height: 20, color: AppColors.accentBlue),
         'Motor',
         _vehicle.engineType ?? '-',
       ),
       _InfoItem(
-        Icons.confirmation_number_outlined,
+        iconoir.InfoCircle(width: 20, height: 20, color: AppColors.accentBlue),
         'Plaka',
         _vehicle.plate ?? '-',
       ),
-      _InfoItem(Icons.palette_outlined, 'Renk', _vehicle.color ?? '-'),
+      _InfoItem(
+        iconoir.Palette(width: 20, height: 20, color: AppColors.accentBlue),
+        'Renk',
+        _vehicle.color ?? '-',
+      ),
     ];
 
     return GridView.count(
@@ -216,7 +211,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
-              Icon(item.icon, size: 20, color: AppColors.accentBlue),
+              item.icon,
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -300,7 +295,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
 }
 
 class _InfoItem {
-  final IconData icon;
+  final Widget icon;
   final String label;
   final String value;
   const _InfoItem(this.icon, this.label, this.value);
