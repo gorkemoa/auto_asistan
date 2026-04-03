@@ -4,6 +4,7 @@ class ChatMessageModel {
   final String content;
   final bool isUser;
   final DateTime timestamp;
+  final String? imageUrl;
   final DiagnosisModel? diagnosis;
 
   const ChatMessageModel({
@@ -11,6 +12,7 @@ class ChatMessageModel {
     required this.content,
     required this.isUser,
     required this.timestamp,
+    this.imageUrl,
     this.diagnosis,
   });
 
@@ -20,6 +22,7 @@ class ChatMessageModel {
       content: json['content'],
       isUser: json['is_user'],
       timestamp: DateTime.parse(json['timestamp']),
+      imageUrl: json['image_url'],
       diagnosis: json['diagnosis'] != null ? DiagnosisModel.fromJson(json['diagnosis']) : null,
     );
   }
@@ -30,6 +33,7 @@ class ChatMessageModel {
       'content': content,
       'is_user': isUser,
       'timestamp': timestamp.toIso8601String(),
+      'image_url': imageUrl,
       'diagnosis': diagnosis?.toJson(),
     };
   }

@@ -45,7 +45,7 @@ class AppDimensions {
   // ── Component Heights ──
   static const double buttonHeight = 52.0;
   static const double inputHeight = 52.0;
-  static const double bottomNavHeight = 80.0;
+  static const double bottomNavHeight = 65.0;
   static const double appBarHeight = 56.0;
 
   // ── Touch Target ──

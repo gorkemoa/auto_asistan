@@ -8,6 +8,7 @@ import '../widgets/diagnosis_card.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import 'package:flutter_chat_core/flutter_chat_core.dart' as chat_core;
 import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
+import 'package:image_picker/image_picker.dart';
 
 /// AI Mekanik Asistan chat ekranı
 class AiChatView extends StatefulWidget {
@@ -39,7 +40,6 @@ class _AiChatViewState extends State<AiChatView> {
     super.dispose();
   }
 
-
   List<chat_core.Message> _getChatMessages() {
     final mappedMessages = <chat_core.Message>[];
 
@@ -49,27 +49,32 @@ class _AiChatViewState extends State<AiChatView> {
       final authorId = msg.isUser ? '1' : '2';
       final id = 'msg_$i';
 
-      if (msg.diagnosis != null) {
-        mappedMessages.insert(0, chat_core.Message.custom(
-          id: id,
-          authorId: authorId,
-          createdAt: msg.timestamp,
-          metadata: {
-            'text': msg.content,
-            'diagnosis': msg.diagnosis,
-          },
-        ));
+      if (msg.diagnosis != null || msg.imageUrl != null) {
+        mappedMessages.add(
+          chat_core.Message.custom(
+            id: id,
+            authorId: authorId,
+            createdAt: msg.timestamp,
+            metadata: {
+              'text': msg.content,
+              'diagnosis': msg.diagnosis,
+              'imageUrl': msg.imageUrl,
+            },
+          ),
+        );
       } else {
-        mappedMessages.insert(0, chat_core.Message.text(
-          id: id,
-          authorId: authorId,
-          createdAt: msg.timestamp,
-          text: msg.content,
-        ));
+        mappedMessages.add(
+          chat_core.Message.text(
+            id: id,
+            authorId: authorId,
+            createdAt: msg.timestamp,
+            text: msg.content,
+          ),
+        );
       }
     }
 
-    // Optional typing indicator message insertion can be manually handled or skipped 
+    // Optional typing indicator message insertion can be manually handled or skipped
     // since flutter_chat_ui v2 handles typing users list differently. We will rely on custom builders or skip it.
     return mappedMessages;
   }
@@ -77,6 +82,19 @@ class _AiChatViewState extends State<AiChatView> {
   Future<chat_core.User> _resolveUser(String id) async {
     if (id == '1') return const chat_core.User(id: '1', name: 'Siz');
     return const chat_core.User(id: '2', name: 'AutoAssist AI');
+  }
+
+  void _onAttachmentPressed() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 1024,
+    );
+
+    if (image != null) {
+      _viewModel.sendMessage('', imagePath: image.path);
+    }
   }
 
   @override
@@ -93,7 +111,11 @@ class _AiChatViewState extends State<AiChatView> {
                   children: [
                     IconButton(
                       onPressed: () => Scaffold.of(context).openDrawer(),
-                      icon: const iconoir.Menu(width: 24, height: 24, color: AppColors.textPrimary),
+                      icon: const iconoir.Menu(
+                        width: 24,
+                        height: 24,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -103,19 +125,28 @@ class _AiChatViewState extends State<AiChatView> {
                         gradient: AppColors.accentGradient,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.auto_fix_high_rounded,
-                          color: Colors.white, size: 18),
+                      child: const iconoir.MagicWand(
+                        width: 18,
+                        height: 18,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(AppStrings.aiAssistant, style: AppTypography.h2),
+                      child: Text(
+                        AppStrings.aiAssistant,
+                        style: AppTypography.h2,
+                      ),
                     ),
                     IconButton(
                       onPressed: () {
-                        _viewModel.clearChat();
-                        _chatController.setMessages([]);
+                        _viewModel.createNewChat();
                       },
-                      icon: const iconoir.Refresh(width: 22, height: 22, color: AppColors.textPrimary),
+                      icon: const iconoir.Refresh(
+                        width: 22,
+                        height: 22,
+                        color: AppColors.textPrimary,
+                      ),
                       tooltip: 'Sohbeti Temizle',
                     ),
                   ],
@@ -150,48 +181,73 @@ class _AiChatViewState extends State<AiChatView> {
                     onMessageSend: (text) {
                       _viewModel.sendMessage(text);
                     },
+                    onAttachmentTap: _onAttachmentPressed,
                     builders: chat_core.Builders(
-                      customMessageBuilder: (context, message, index,
-                          {required bool isSentByMe,
-                          chat_core.MessageGroupStatus? groupStatus}) {
-                        final txt = message.metadata?['text'] as String?;
-                        final dia = message.metadata?['diagnosis'];
+                      customMessageBuilder:
+                          (
+                            context,
+                            message,
+                            index, {
+                            required bool isSentByMe,
+                            chat_core.MessageGroupStatus? groupStatus,
+                          }) {
+                            final txt =
+                                (message.metadata?['text'] ?? '') as String;
+                            final dia = message.metadata?['diagnosis'];
+                            final imageUrl =
+                                message.metadata?['imageUrl'] as String?;
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 12),
-                          child: Column(
-                            crossAxisAlignment: isSentByMe
-                                ? CrossAxisAlignment.end
-                                : CrossAxisAlignment.start,
-                            children: [
-                              if (txt != null && txt.isNotEmpty)
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: isSentByMe
-                                        ? AppColors.accentBlue
-                                        : AppColors.surfaceCard,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    txt,
-                                    style: TextStyle(
-                                      color: isSentByMe
-                                          ? Colors.white
-                                          : AppColors.textPrimary,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: isSentByMe
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                                children: [
+                                  if (imageUrl != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.network(
+                                          imageUrl,
+                                          width: 240,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, _, __) =>
+                                              const SizedBox(),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              if (dia != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: DiagnosisCard(diagnosis: dia),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
+                                  if (txt.isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isSentByMe
+                                            ? AppColors.accentBlue
+                                            : AppColors.surfaceCard,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        txt,
+                                        style: TextStyle(
+                                          color: isSentByMe
+                                              ? Colors.white
+                                              : AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                  if (dia != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: DiagnosisCard(diagnosis: dia),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
                     ),
                   );
                 },
@@ -216,7 +272,7 @@ class _AiChatViewState extends State<AiChatView> {
                   _viewModel.createNewChat();
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.add_rounded),
+                icon: const iconoir.Plus(width: 20, height: 20),
                 label: const Text('Yeni Sohbet'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),
@@ -236,23 +292,32 @@ class _AiChatViewState extends State<AiChatView> {
                   if (_viewModel.sessions.isEmpty) {
                     return const Center(child: Text('Geçmiş bulunamadı'));
                   }
-                  
+
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     itemCount: _viewModel.sessions.length,
                     itemBuilder: (context, index) {
                       final session = _viewModel.sessions[index];
-                      final isSelected = session.id == _viewModel.currentSession?.id;
-                      
+                      final isSelected =
+                          session.id == _viewModel.currentSession?.id;
+
                       return ListTile(
-                        leading: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                        leading: const iconoir.ChatBubble(
+                          width: 20,
+                          height: 20,
+                          color: AppColors.textTertiary,
+                        ),
                         title: Text(
                           session.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.bodyMedium.copyWith(
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AppColors.accentBlue : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.accentBlue
+                                : AppColors.textPrimary,
                           ),
                         ),
                         selected: isSelected,
@@ -262,7 +327,11 @@ class _AiChatViewState extends State<AiChatView> {
                           Navigator.pop(context);
                         },
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.textTertiary),
+                          icon: const iconoir.Trash(
+                            width: 20,
+                            height: 20,
+                            color: AppColors.textTertiary,
+                          ),
                           onPressed: () {
                             _viewModel.deleteChat(session.id);
                           },

@@ -41,11 +41,12 @@ Görevin:
   /// AI'a soru sor
   Future<Map<String, dynamic>> askQuestion(
     String question, {
-    List<Map<String, String>> previousMessages = const [],
+    List<Map<String, dynamic>> previousMessages = const [],
     String? userContext,
+    String? base64Image,
   }) async {
     try {
-      final messages = [
+      final List<Map<String, dynamic>> messages = [
         {'role': 'system', 'content': _systemPrompt},
         if (userContext != null)
           {
@@ -53,11 +54,27 @@ Görevin:
             'content': 'KULLANICI VERİLERİ (CONTEXT):\\n$userContext',
           },
         ...previousMessages,
-        {'role': 'user', 'content': question},
       ];
 
+      if (base64Image != null) {
+        messages.add({
+          'role': 'user',
+          'content': [
+            {'type': 'text', 'text': question},
+            {
+              'type': 'image_url',
+              'image_url': {
+                'url': 'data:image/jpeg;base64,$base64Image',
+              },
+            },
+          ],
+        });
+      } else {
+        messages.add({'role': 'user', 'content': question});
+      }
+
       final body = {
-        'model': 'grok-4-1-fast-reasoning',
+        'model': 'grok-4.20-latest',
         'messages': messages,
         'temperature': 0.7,
         'max_tokens': 1024,

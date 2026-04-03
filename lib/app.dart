@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/services/supabase_service.dart';
@@ -19,8 +20,8 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  // Auth durumu: 'loading', 'onboarding', 'login', 'register', 'home'
   String _screen = 'loading';
+  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
@@ -28,30 +29,42 @@ class _AppState extends State<App> {
     _checkAuthState();
   }
 
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
+
   Future<void> _checkAuthState() async {
     // Supabase auth kontrol
     if (SupabaseService.isLoggedIn) {
       if (!StorageService.isOnboardingComplete) {
-        setState(() => _screen = 'onboarding');
+        _updateScreen('onboarding');
       } else {
-        setState(() => _screen = 'home');
+        _updateScreen('home');
       }
     } else {
-      setState(() => _screen = 'login');
+      _updateScreen('login');
     }
 
     // Auth değişikliklerini dinle
-    SupabaseService.authStateChanges.listen((event) {
+    _authSubscription = SupabaseService.authStateChanges.listen((event) {
       if (event.event == AuthChangeEvent.signedIn) {
         if (!StorageService.isOnboardingComplete) {
-          setState(() => _screen = 'onboarding');
+          _updateScreen('onboarding');
         } else {
-          setState(() => _screen = 'home');
+          _updateScreen('home');
         }
       } else if (event.event == AuthChangeEvent.signedOut) {
-        setState(() => _screen = 'login');
+        _updateScreen('login');
       }
     });
+  }
+
+  void _updateScreen(String screen) {
+    if (mounted) {
+      setState(() => _screen = screen);
+    }
   }
 
   @override

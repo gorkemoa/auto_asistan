@@ -51,6 +51,7 @@ class AiChatRepository {
           content: json['content'],
           isUser: json['is_user'],
           timestamp: DateTime.parse(json['timestamp']),
+          imageUrl: json['image_url'],
           diagnosis: json['diagnosis'] != null
               ? DiagnosisModel.fromJson(Map<String, dynamic>.from(json['diagnosis']))
               : null,
@@ -112,6 +113,7 @@ class AiChatRepository {
         'session_id': sessionId,
         'content': message.content,
         'is_user': message.isUser,
+        'image_url': message.imageUrl,
         'diagnosis': message.diagnosis?.toJson(),
         'timestamp': message.timestamp.toIso8601String(),
       });

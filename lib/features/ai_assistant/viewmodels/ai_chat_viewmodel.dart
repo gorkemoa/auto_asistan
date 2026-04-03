@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/utils/logger.dart';
 import '../../garage/services/vehicle_repository.dart';
 import '../../expenses/services/expense_repository.dart';
@@ -165,9 +169,34 @@ class AiChatViewModel extends ChangeNotifier {
   }
 
   /// Mesaj gönder
-  Future<void> sendMessage(String text) async {
+  Future<void> sendMessage(String text, {String? imagePath}) async {
     final session = currentSession;
-    if (session == null || text.trim().isEmpty) return;
+    if (session == null || (text.trim().isEmpty && imagePath == null)) return;
+
+    String? publicImageUrl;
+    String? base64Image;
+
+    // Eğer görsel varsa, Supabase'e yükle ve base64 al
+    if (imagePath != null) {
+      try {
+        final file = File(imagePath);
+        final bytes = await file.readAsBytes();
+        base64Image = base64Encode(bytes);
+
+        final fileName = '${_uuid.v4()}.jpg';
+        final path = 'chat_images/${session.id}/$fileName';
+
+        await SupabaseService.client.storage
+            .from('chat_images')
+            .upload(path, file);
+
+        publicImageUrl = SupabaseService.client.storage
+            .from('chat_images')
+            .getPublicUrl(path);
+      } catch (e) {
+        AppLogger.error('Görsel yükleme hatası', e);
+      }
+    }
 
     // Kullanıcı mesajı ekle
     final userMessage = ChatMessageModel(
@@ -175,9 +204,16 @@ class AiChatViewModel extends ChangeNotifier {
       content: text.trim(),
       isUser: true,
       timestamp: DateTime.now(),
+      imageUrl: publicImageUrl,
     );
     session.messages.add(userMessage);
-    await _updateSessionTitleIfNeeded(text.trim());
+    
+    if (text.trim().isNotEmpty) {
+      await _updateSessionTitleIfNeeded(text.trim());
+    } else if (imagePath != null) {
+      await _updateSessionTitleIfNeeded('Görsel Mesaj');
+    }
+    
     await _chatRepo.saveMessage(session.id, userMessage);
     
     _isTyping = true;
@@ -203,6 +239,7 @@ class AiChatViewModel extends ChangeNotifier {
         text,
         previousMessages: previousMessages,
         userContext: context,
+        base64Image: base64Image,
       );
 
       DiagnosisModel? diagnosis;

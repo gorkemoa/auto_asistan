@@ -11,6 +11,7 @@ import '../features/garage/viewmodels/garage_viewmodel.dart';
 import '../features/settings/views/settings_view.dart';
 import 'dart:ui';
 import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 /// Bottom Navigation Shell — ana sayfa container'ı
 class BottomNavShell extends StatefulWidget {
@@ -134,31 +135,83 @@ class _BottomNavShellState extends State<BottomNavShell> {
 
   Widget _buildCustomGlassBar() {
     return Container(
-      height: AppDimensions.bottomNavHeight + MediaQuery.of(context).padding.bottom,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      height:
+          AppDimensions.bottomNavHeight + MediaQuery.of(context).padding.bottom,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.surfaceCard.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1.5,
+        child: LiquidGlassLayer(
+          child: LiquidGlass(
+            shape: const LiquidRoundedRectangle(borderRadius: 28),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  width: 1.0,
+                ),
               ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildNavItem(0, iconoir.Home(width: 24, height: 24, color: _currentIndex == 0 ? AppColors.accentBlue : AppColors.textTertiary), 'Ana Sayfa'),
-                _buildNavItem(1, iconoir.Car(width: 24, height: 24, color: _currentIndex == 1 ? AppColors.accentBlue : AppColors.textTertiary), 'Garaj'),
-                _buildNavItem(2, iconoir.MapsArrow(width: 24, height: 24, color: _currentIndex == 2 ? AppColors.accentBlue : AppColors.textTertiary), 'Harita'),
-                _buildNavItem(3, iconoir.Wallet(width: 24, height: 24, color: _currentIndex == 3 ? AppColors.accentBlue : AppColors.textTertiary), 'Giderler'),
-                _buildNavItem(4, iconoir.Settings(width: 24, height: 24, color: _currentIndex == 4 ? AppColors.accentBlue : AppColors.textTertiary), 'Ayarlar'),
-              ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildNavItem(
+                    0,
+                    iconoir.Home(
+                      width: 24,
+                      height: 24,
+                      color: _currentIndex == 0
+                          ? AppColors.accentBlue
+                          : AppColors.textTertiary,
+                    ),
+                    'Ana Sayfa',
+                  ),
+                  _buildNavItem(
+                    1,
+                    iconoir.Car(
+                      width: 24,
+                      height: 24,
+                      color: _currentIndex == 1
+                          ? AppColors.accentBlue
+                          : AppColors.textTertiary,
+                    ),
+                    'Garaj',
+                  ),
+                  _buildNavItem(
+                    2,
+                    iconoir.MapsArrow(
+                      width: 24,
+                      height: 24,
+                      color: _currentIndex == 2
+                          ? AppColors.accentBlue
+                          : AppColors.textTertiary,
+                    ),
+                    'Harita',
+                  ),
+                  _buildNavItem(
+                    3,
+                    iconoir.Wallet(
+                      width: 24,
+                      height: 24,
+                      color: _currentIndex == 3
+                          ? AppColors.accentBlue
+                          : AppColors.textTertiary,
+                    ),
+                    'Giderler',
+                  ),
+                  _buildNavItem(
+                    4,
+                    iconoir.Settings(
+                      width: 24,
+                      height: 24,
+                      color: _currentIndex == 4
+                          ? AppColors.accentBlue
+                          : AppColors.textTertiary,
+                    ),
+                    'Ayarlar',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -186,7 +239,9 @@ class _BottomNavShellState extends State<BottomNavShell> {
               label,
               style: AppTypography.caption.copyWith(
                 fontSize: 10,
-                color: isSelected ? AppColors.accentBlue : AppColors.textTertiary,
+                color: isSelected
+                    ? AppColors.accentBlue
+                    : AppColors.textTertiary,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),

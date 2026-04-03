@@ -7,7 +7,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   geolocator_windows
   permission_handler_windows
-  speech_to_text_windows
   url_launcher_windows
 )
 
