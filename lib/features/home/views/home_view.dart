@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
@@ -8,12 +7,12 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/auto_card.dart';
 import '../../../core/widgets/loading_indicator.dart';
 import '../viewmodels/home_viewmodel.dart';
-import '../../reminders/models/reminder_model.dart';
-import '../../reminders/views/add_reminder_view.dart';
-import '../../expenses/models/expense_model.dart';
 import '../../expenses/views/add_expense_view.dart';
+import '../../expenses/models/expense_model.dart';
 import '../../garage/views/add_vehicle_view.dart';
 import '../../ai_assistant/views/ai_chat_view.dart';
+import '../widgets/dashboard_action_button.dart';
+import '../../map/views/map_view.dart';
 
 /// Ana Sayfa — Dashboard
 class HomeView extends StatefulWidget {
@@ -66,15 +65,18 @@ class _HomeViewState extends State<HomeView> {
                           horizontal: AppDimensions.pagePaddingH,
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment
+                              .start, // Card looks better with start alignment
                           children: [
                             const SizedBox(height: AppDimensions.spacing16),
                             if (_viewModel.garageVM.hasVehicles) ...[
                               _buildVehicleSelector(),
-                              const SizedBox(height: AppDimensions.spacing24),
-                              _buildSummaryGrid(),
                               const SizedBox(height: AppDimensions.spacing32),
-                              _buildRecentExpenses(),
+                              _buildQuickActions(),
+                              const SizedBox(height: AppDimensions.spacing32),
+                              _buildRecentExpensesSection(),
+                              const SizedBox(height: AppDimensions.spacing32),
+                              _buildRemindersSection(),
                             ] else ...[
                               _buildWelcomeCard(),
                             ],
@@ -95,81 +97,28 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      expandedHeight: 80,
-      floating: false,
-      pinned: true,
+      expandedHeight: 60,
+      floating: true,
+      pinned: false,
       elevation: 0,
       backgroundColor: AppColors.surfaceLight,
-      title: Text(
-        AppStrings.appName,
-        style: AppTypography.h2.copyWith(fontSize: 22),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.chevron_left_rounded,
+          color: AppColors.textPrimary,
+        ),
+        onPressed: () {}, // Navigation usually handled by parent
       ),
       actions: [
-        _buildAppAction(
-          icon: Icons.auto_fix_high_rounded,
-          color: AppColors.accentTeal,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AiChatView())),
-        ),
-        _buildAppAction(
-          icon: Icons.add_card_rounded,
-          color: AppColors.expenseFuel,
-          onTap: () {
-            final vehicleId = _viewModel.garageVM.selectedVehicle?.id;
-            if (vehicleId != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddExpenseView(
-                    vehicleId: vehicleId,
-                    onSaved: (expense) {
-                      _viewModel.expensesVM.addExpense(expense);
-                      Navigator.pop(context);
-                      _viewModel.loadDashboard();
-                    },
-                  ),
-                ),
-              );
-            }
-          },
-        ),
-        _buildAppAction(
-          icon: Icons.notification_add_rounded,
-          color: AppColors.warning,
-          onTap: () {
-            final vehicleId = _viewModel.garageVM.selectedVehicle?.id;
-            if (vehicleId != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddReminderView(
-                    vehicleId: vehicleId,
-                    onSaved: (reminder) {
-                      _viewModel.remindersVM.addReminder(reminder);
-                      Navigator.pop(context);
-                      _viewModel.loadDashboard();
-                    },
-                  ),
-                ),
-              );
-            }
-          },
+        IconButton(
+          icon: const Icon(
+            Icons.more_horiz_rounded,
+            color: AppColors.textPrimary,
+          ),
+          onPressed: () => _showVehicleSwitcher(),
         ),
         const SizedBox(width: 8),
       ],
-    );
-  }
-
-  Widget _buildAppAction({required IconData icon, required Color color, required VoidCallback onTap}) {
-    return IconButton(
-      onPressed: onTap,
-      icon: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: color, size: 20),
-      ),
     );
   }
 
@@ -203,7 +152,10 @@ class _HomeViewState extends State<HomeView> {
                         children: [
                           Text(
                             vehicle.displayName,
-                            style: AppTypography.h3.copyWith(color: Colors.white, fontSize: 22),
+                            style: AppTypography.h3.copyWith(
+                              color: Colors.white,
+                              fontSize: 22,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -219,7 +171,11 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.swap_horiz_rounded, color: Colors.white, size: 20),
+                    const Icon(
+                      Icons.swap_horiz_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ],
                 ),
                 Column(
@@ -227,12 +183,17 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Text(
                       'Güncel Durum',
-                      style: AppTypography.caption.copyWith(color: Colors.white.withValues(alpha: 0.7)),
+                      style: AppTypography.caption.copyWith(
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       CurrencyFormatter.formatKm(vehicle.currentKm),
-                      style: AppTypography.h3.copyWith(color: Colors.white, fontSize: 24),
+                      style: AppTypography.numericLarge.copyWith(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
                     ),
                   ],
                 ),
@@ -249,7 +210,8 @@ class _HomeViewState extends State<HomeView> {
               width: 170,
               height: 170,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
             ),
           ),
         ),
@@ -257,251 +219,114 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildSummaryGrid() {
-    return ListenableBuilder(
-      listenable: _viewModel.expensesVM,
-      builder: (context, _) => ListenableBuilder(
-        listenable: _viewModel.remindersVM,
-        builder: (context, _) {
-          final nextReminder = _viewModel.remindersVM.activeReminders.isNotEmpty
-              ? _viewModel.remindersVM.activeReminders.first
-              : null;
-
-          return SizedBox(
-            height: 250,
-            child: Row(
-              children: [
-                // Sol Büyük Kart: Sıradaki İşlem (Reminder Hero)
-                Expanded(
-                  flex: 11,
-                  child: _buildReminderHeroCard(nextReminder),
-                ),
-                const SizedBox(width: 12),
-                // Sağ Kolon: Aylık Gider ve KM
-                Expanded(
-                  flex: 8,
-                  child: Column(
-                    children: [
-                      // Aylık Gider Kartı
-                      Expanded(
-                        child: _buildAylikGiderSmallCard(),
-                      ),
-                      const SizedBox(height: 12),
-                      // KM Kartı
-                      _buildKmStatCardCompact(),
-                    ],
+  Widget _buildQuickActions() {
+    return Row(
+      children: [
+        DashboardActionButton(
+          icon: Icons.auto_fix_high_rounded,
+          label: AppStrings.navAI,
+          iconColor: AppColors.accentBlue,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AiChatView()),
+          ),
+        ),
+        const SizedBox(width: 12),
+        DashboardActionButton(
+          icon: Icons.map_rounded,
+          label: AppStrings.map,
+          iconColor: AppColors.accentTeal,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MapView()),
+          ),
+        ),
+        const SizedBox(width: 12),
+        DashboardActionButton(
+          icon: Icons.add_rounded,
+          label: AppStrings.addExpense,
+          iconColor: AppColors.primaryNavy,
+          onTap: () {
+            final vehicleId = _viewModel.garageVM.selectedVehicle?.id;
+            if (vehicleId != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddExpenseView(
+                    vehicleId: vehicleId,
+                    onSaved: (expense) {
+                      _viewModel.expensesVM.addExpense(expense);
+                      Navigator.pop(context);
+                      _viewModel.loadDashboard();
+                    },
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildReminderHeroCard(ReminderModel? next) {
-    return AutoCard(
-      gradient: next != null ? AppColors.primaryGradient : null,
-      color: next == null ? AppColors.surfaceLight : Colors.white,
-      padding: const EdgeInsets.all(22),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -25,
-            bottom: -25,
-            child: Icon(
-              Icons.notifications_none_rounded,
-              size: 110,
-              color: (next != null ? Colors.white : AppColors.primaryNavy).withValues(alpha: 0.08),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: (next != null ? Colors.white : AppColors.primaryNavy).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'SIRADAKİ İŞLEM',
-                      style: AppTypography.caption.copyWith(
-                        color: next != null ? Colors.white : AppColors.primaryNavy,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.2,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  if (next != null) ...[
-                    Text(
-                      next.title,
-                      style: AppTypography.h3.copyWith(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ] else ...[
-                    Text(
-                      'Planlanmış işlem yok',
-                      style: AppTypography.h4.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (next != null) ...[
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_rounded, color: Colors.white70, size: 14),
-                        const SizedBox(width: 8),
-                        Text(
-                          next.targetDate != null ? '${next.targetDate!.day} ${_monthName(next.targetDate!.month)} ${next.targetDate!.year}' : 'KM Takibi',
-                          style: AppTypography.labelLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: widget.onNavigateToReminders,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: next != null ? Colors.white.withValues(alpha: 0.15) : Colors.white,
-                        foregroundColor: next != null ? Colors.white : AppColors.primaryNavy,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        side: BorderSide(
-                          color: next != null ? Colors.white.withValues(alpha: 0.3) : AppColors.surfaceDivider,
-                          width: 1,
-                        ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Tümünü Gör', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAylikGiderSmallCard() {
-    return AutoCard(
-      padding: const EdgeInsets.all(16),
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Aylık Gider',
-                style: AppTypography.caption.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
-              ),
-              const Icon(Icons.show_chart_rounded, size: 16, color: AppColors.accentBlue),
-            ],
-          ),
-          const SizedBox(height: 6),
-          FittedBox(
-            child: Text(
-              CurrencyFormatter.format(_viewModel.expensesVM.monthlyTotal),
-              style: AppTypography.h4.copyWith(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Toplam: ${CurrencyFormatter.compact(_viewModel.expensesVM.totalExpenses)}',
-            style: AppTypography.caption.copyWith(color: AppColors.textTertiary, fontSize: 10),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildKmStatCardCompact() {
-    final km = _viewModel.garageVM.selectedVehicle?.currentKm ?? 0;
-    return AutoCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Güncel KM',
-            style: AppTypography.caption.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                km.toString(),
-                style: AppTypography.h4.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 2),
-              Text(
-                'km',
-                style: AppTypography.caption.copyWith(color: AppColors.textTertiary, fontSize: 10),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  Widget _buildRecentExpenses() {
+  Widget _buildRecentExpensesSection() {
     return ListenableBuilder(
       listenable: _viewModel.expensesVM,
       builder: (context, _) {
-        final expenses = _viewModel.expensesVM.expenses.take(5).toList();
+        final expenses = _viewModel.expensesVM.expenses.take(3).toList();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Son İşlemler', style: AppTypography.h3.copyWith(fontSize: 20)),
-                const Icon(Icons.sort_rounded, size: 16, color: AppColors.textSecondary),
+                Text(AppStrings.recentExpenses, style: AppTypography.h3),
+                TextButton(
+                  onPressed: widget.onNavigateToExpenses,
+                  child: const Text(
+                    'Tümü',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             if (expenses.isEmpty)
-              const AutoCard(child: Center(child: Padding(padding: EdgeInsets.all(12), child: Text('Henüz işlem yok', style: TextStyle(fontSize: 12)))))
+              AutoCard(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.receipt_long_rounded,
+                      color: AppColors.textTertiary.withValues(alpha: 0.5),
+                      size: 28,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppStrings.emptyExpenses,
+                      style: AppTypography.caption,
+                    ),
+                  ],
+                ),
+              )
             else
               AutoCard(
                 padding: EdgeInsets.zero,
                 child: ListView.separated(
+                  padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: expenses.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.surfaceDivider, indent: 64),
-                  itemBuilder: (context, index) => _buildExpenseRow(expenses[index]),
+                  separatorBuilder: (_, __) => const Divider(
+                    height: 1,
+                    color: AppColors.surfaceDivider,
+                    indent: 64,
+                  ),
+                  itemBuilder: (context, index) {
+                    final expense = expenses[index];
+                    return _buildDynamicExpenseRow(expense);
+                  },
                 ),
               ),
           ],
@@ -510,51 +335,160 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildExpenseRow(ExpenseModel expense) {
+  Widget _buildDynamicExpenseRow(ExpenseModel expense) {
     IconData icon;
     Color color;
     switch (expense.category) {
-      case 'yakit': icon = Icons.local_gas_station_rounded; color = AppColors.expenseFuel; break;
-      case 'bakim': icon = Icons.build_rounded; color = AppColors.expenseMaintenance; break;
+      case 'yakit':
+        icon = Icons.local_gas_station_rounded;
+        color = AppColors.expenseFuel;
+        break;
+      case 'bakim':
+        icon = Icons.build_rounded;
+        color = AppColors.expenseMaintenance;
+        break;
       case 'sigorta':
-      case 'kasko': icon = Icons.shield_rounded; color = AppColors.expenseInsurance; break;
-      default: icon = Icons.receipt_rounded; color = AppColors.expenseOther;
+      case 'kasko':
+        icon = Icons.shield_rounded;
+        color = AppColors.expenseInsurance;
+        break;
+      default:
+        icon = Icons.receipt_rounded;
+        color = AppColors.expenseOther;
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      title: Text(
+        expense.categoryDisplayName,
+        style: AppTypography.labelMedium,
+      ),
+      subtitle: Text(
+        '${expense.date.day} ${_monthName(expense.date.month)}',
+        style: AppTypography.caption,
+      ),
+      trailing: Text(
+        CurrencyFormatter.format(expense.amount),
+        style: AppTypography.labelMedium.copyWith(color: AppColors.textPrimary),
+      ),
+    );
+  }
+
+  Widget _buildRemindersSection() {
+    return ListenableBuilder(
+      listenable: _viewModel.remindersVM,
+      builder: (context, _) {
+        final reminders = _viewModel.remindersVM.activeReminders
+            .take(3)
+            .toList();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(expense.categoryDisplayName, style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600)),
-                Text('${expense.date.day} ${_monthName(expense.date.month)} ${expense.date.year}', style: AppTypography.caption.copyWith(color: AppColors.textTertiary)),
+                Text(AppStrings.reminders, style: AppTypography.h3),
+                TextButton(
+                  onPressed: widget.onNavigateToReminders,
+                  child: const Text(
+                    'Tümü',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(CurrencyFormatter.format(expense.amount), style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600)),
-              Row(
-                children: [
-                  Text('Detay', style: AppTypography.caption.copyWith(color: AppColors.textTertiary)),
-                  const Icon(Icons.chevron_right_rounded, size: 14, color: AppColors.textTertiary),
-                ],
+            const SizedBox(height: 12),
+            if (reminders.isEmpty)
+              AutoCard(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.notifications_none_rounded,
+                      color: AppColors.textTertiary.withValues(alpha: 0.5),
+                      size: 28,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppStrings.emptyReminders,
+                      style: AppTypography.caption,
+                    ),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: reminders
+                    .map(
+                      (r) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: AutoCard(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: AppColors.accentBlue.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.event_note_rounded,
+                                  color: AppColors.accentBlue,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      r.title,
+                                      style: AppTypography.labelMedium,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      r.targetDate != null
+                                          ? '${r.targetDate!.day} ${_monthName(r.targetDate!.month)} ${r.targetDate!.year}'
+                                          : '${r.targetKm} KM',
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: AppColors.textTertiary.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 
@@ -564,17 +498,45 @@ class _HomeViewState extends State<HomeView> {
       hasBorder: false,
       child: Column(
         children: [
-          const Icon(Icons.directions_car_filled_rounded, color: Colors.white, size: 56),
+          const Icon(
+            Icons.directions_car_filled_rounded,
+            color: Colors.white,
+            size: 56,
+          ),
           const SizedBox(height: 16),
-          Text('AutoAssist\'e Hoş Geldiniz! 🚗', style: AppTypography.h3.copyWith(color: Colors.white), textAlign: TextAlign.center),
+          Text(
+            'AutoAssist\'e Hoş Geldiniz! 🚗',
+            style: AppTypography.h3.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
-          Text('Dijital araç asistanınızı kullanmaya başlamak için ilk aracınızı ekleyin.', style: AppTypography.bodySmall.copyWith(color: Colors.white.withValues(alpha: 0.8)), textAlign: TextAlign.center),
+          Text(
+            'Dijital araç asistanınızı kullanmaya başlamak için ilk aracınızı ekleyin.',
+            style: AppTypography.bodySmall.copyWith(
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AddVehicleView(onSaved: (v) { _viewModel.garageVM.addVehicle(v); Navigator.pop(context); _viewModel.loadDashboard(); }))),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddVehicleView(
+                  onSaved: (v) {
+                    _viewModel.garageVM.addVehicle(v);
+                    Navigator.pop(context);
+                    _viewModel.loadDashboard();
+                  },
+                ),
+              ),
+            ),
             icon: const Icon(Icons.add_rounded),
             label: const Text(AppStrings.addVehicle),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: AppColors.primaryNavy),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.primaryNavy,
+            ),
           ),
         ],
       ),
@@ -582,7 +544,20 @@ class _HomeViewState extends State<HomeView> {
   }
 
   String _monthName(int month) {
-    const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+    const months = [
+      'Oca',
+      'Şub',
+      'Mar',
+      'Nis',
+      'May',
+      'Haz',
+      'Tem',
+      'Ağu',
+      'Eyl',
+      'Eki',
+      'Kas',
+      'Ara',
+    ];
     if (month < 1 || month > 12) return '';
     return months[month - 1];
   }
@@ -599,13 +574,40 @@ class _HomeViewState extends State<HomeView> {
             Text('Araç Seçin', style: AppTypography.h3),
             const SizedBox(height: 16),
             ..._viewModel.garageVM.vehicles.map((v) {
-              final isSelected = v.id == _viewModel.garageVM.selectedVehicle?.id;
+              final isSelected =
+                  v.id == _viewModel.garageVM.selectedVehicle?.id;
               return ListTile(
-                leading: Container(width: 42, height: 42, decoration: BoxDecoration(gradient: isSelected ? AppColors.accentGradient : AppColors.cardGradient, borderRadius: BorderRadius.circular(10)), child: Icon(Icons.directions_car_filled_rounded, color: isSelected ? Colors.white : AppColors.accentBlue, size: 22)),
+                leading: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? AppColors.accentGradient
+                        : AppColors.cardGradient,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.directions_car_filled_rounded,
+                    color: isSelected ? Colors.white : AppColors.accentBlue,
+                    size: 22,
+                  ),
+                ),
                 title: Text(v.displayName, style: AppTypography.labelLarge),
-                subtitle: Text('${v.year} • ${v.plate ?? ""}', style: AppTypography.caption),
-                trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: AppColors.accentBlue) : null,
-                onTap: () { _viewModel.garageVM.selectVehicle(v); _viewModel.onVehicleChanged(v.id); Navigator.pop(context); },
+                subtitle: Text(
+                  '${v.year} • ${v.plate ?? ""}',
+                  style: AppTypography.caption,
+                ),
+                trailing: isSelected
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.accentBlue,
+                      )
+                    : null,
+                onTap: () {
+                  _viewModel.garageVM.selectVehicle(v);
+                  _viewModel.onVehicleChanged(v.id);
+                  Navigator.pop(context);
+                },
               );
             }),
             const SizedBox(height: 16),

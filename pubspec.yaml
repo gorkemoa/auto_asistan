@@ -50,6 +50,11 @@ dependencies:
   url_launcher: ^6.3.0
   speech_to_text: ^7.0.0
   flutter_dotenv: ^5.2.1
+  iconoir_flutter: ^7.11.0
+  liquid_glass_bar: ^0.1.1
+  flutter_chat_ui: ^2.11.1
+  settings_ui: ^2.0.2
+  flutter_chat_types: ^3.6.2
 
 dev_dependencies:
   flutter_test:

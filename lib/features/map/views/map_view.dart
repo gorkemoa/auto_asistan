@@ -25,10 +25,22 @@ class _MapViewState extends State<MapView> {
   PlaceModel? _selectedPlace;
 
   final _filters = [
-    {'key': 'all', 'label': AppStrings.allCategories, 'icon': Icons.apps_rounded},
-    {'key': 'car_repair', 'label': AppStrings.autoRepair, 'icon': Icons.build_rounded},
+    {
+      'key': 'all',
+      'label': AppStrings.allCategories,
+      'icon': Icons.apps_rounded,
+    },
+    {
+      'key': 'car_repair',
+      'label': AppStrings.autoRepair,
+      'icon': Icons.build_rounded,
+    },
     {'key': 'fuel', 'label': 'Yakıt', 'icon': Icons.local_gas_station_rounded},
-    {'key': 'inspection', 'label': AppStrings.inspectionStation, 'icon': Icons.fact_check_rounded},
+    {
+      'key': 'inspection',
+      'label': AppStrings.inspectionStation,
+      'icon': Icons.fact_check_rounded,
+    },
   ];
 
   @override
@@ -52,8 +64,11 @@ class _MapViewState extends State<MapView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.location_off_rounded,
-                      size: 48, color: AppColors.textTertiary),
+                  const Icon(
+                    Icons.location_off_rounded,
+                    size: 48,
+                    color: AppColors.textTertiary,
+                  ),
                   const SizedBox(height: 16),
                   Text(_viewModel.error!, style: AppTypography.bodyMedium),
                   const SizedBox(height: 16),
@@ -79,7 +94,8 @@ class _MapViewState extends State<MapView> {
                 options: MapOptions(
                   initialCenter: center,
                   initialZoom: 14,
-                  onTap: (tapPosition, point) => setState(() => _selectedPlace = null),
+                  onTap: (tapPosition, point) =>
+                      setState(() => _selectedPlace = null),
                 ),
                 children: [
                   TileLayer(
@@ -103,7 +119,9 @@ class _MapViewState extends State<MapView> {
                               border: Border.all(color: Colors.white, width: 3),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.accentBlue.withValues(alpha: 0.4),
+                                  color: AppColors.accentBlue.withValues(
+                                    alpha: 0.4,
+                                  ),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -124,14 +142,16 @@ class _MapViewState extends State<MapView> {
                           onTap: () {
                             final url =
                                 'https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}';
-                            launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                            launchUrl(
+                              Uri.parse(url),
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               color: AppColors.danger,
                               shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 2),
+                              border: Border.all(color: Colors.white, width: 2),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.2),
@@ -139,8 +159,11 @@ class _MapViewState extends State<MapView> {
                                 ),
                               ],
                             ),
-                            child: const Icon(Icons.build_rounded,
-                                color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.build_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                         ),
                       );
@@ -159,7 +182,8 @@ class _MapViewState extends State<MapView> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _filters.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final filter = _filters[index];
                       final isSelected =
@@ -168,11 +192,13 @@ class _MapViewState extends State<MapView> {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(filter['icon'] as IconData,
-                                size: 16,
-                                color: isSelected
-                                    ? AppColors.accentBlue
-                                    : AppColors.textSecondary),
+                            Icon(
+                              filter['icon'] as IconData,
+                              size: 16,
+                              color: isSelected
+                                  ? AppColors.accentBlue
+                                  : AppColors.textSecondary,
+                            ),
                             const SizedBox(width: 6),
                             Text(filter['label'] as String),
                           ],
@@ -227,8 +253,11 @@ class _MapViewState extends State<MapView> {
               color: AppColors.accentBlue.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             ),
-            child: const Icon(Icons.location_on_rounded,
-                color: AppColors.accentBlue, size: 24),
+            child: const Icon(
+              Icons.location_on_rounded,
+              color: AppColors.accentBlue,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -266,8 +295,11 @@ class _MapViewState extends State<MapView> {
                 color: AppColors.accentBlue,
                 borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
               ),
-              child: const Icon(Icons.directions_rounded,
-                  color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.directions_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
