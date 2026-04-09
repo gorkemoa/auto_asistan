@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
 import '../../../core/constants/app_colors.dart';
@@ -13,7 +14,7 @@ import '../../expenses/models/expense_model.dart';
 import '../../garage/views/add_vehicle_view.dart';
 import '../../ai_assistant/views/ai_chat_view.dart';
 import '../widgets/dashboard_action_button.dart';
-import '../../map/views/map_view.dart';
+import '../../forum/views/forum_view.dart';
 
 /// Ana Sayfa — Dashboard
 class HomeView extends StatefulWidget {
@@ -212,15 +213,15 @@ class _HomeViewState extends State<HomeView> {
         ),
         const SizedBox(width: 12),
         DashboardActionButton(
-          iconWidget: const iconoir.MapsArrow(
+          iconWidget: const iconoir.ChatBubbleEmpty(
             width: 28,
             height: 28,
             color: AppColors.accentTeal,
           ),
-          label: AppStrings.map,
+          label: 'Forum',
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const MapView()),
+            MaterialPageRoute(builder: (_) => const ForumView()),
           ),
         ),
         const SizedBox(width: 12),
@@ -325,20 +326,36 @@ class _HomeViewState extends State<HomeView> {
     Color color;
     switch (expense.category) {
       case 'yakit':
-        icon = iconoir.GasTank(width: 20, height: 20, color: AppColors.expenseFuel);
+        icon = iconoir.GasTank(
+          width: 20,
+          height: 20,
+          color: AppColors.expenseFuel,
+        );
         color = AppColors.expenseFuel;
         break;
       case 'bakim':
-        icon = iconoir.Wrench(width: 20, height: 20, color: AppColors.expenseMaintenance);
+        icon = iconoir.Wrench(
+          width: 20,
+          height: 20,
+          color: AppColors.expenseMaintenance,
+        );
         color = AppColors.expenseMaintenance;
         break;
       case 'sigorta':
       case 'kasko':
-        icon = iconoir.Shield(width: 20, height: 20, color: AppColors.expenseInsurance);
+        icon = iconoir.Shield(
+          width: 20,
+          height: 20,
+          color: AppColors.expenseInsurance,
+        );
         color = AppColors.expenseInsurance;
         break;
       default:
-        icon = iconoir.Reports(width: 20, height: 20, color: AppColors.expenseOther);
+        icon = iconoir.Reports(
+          width: 20,
+          height: 20,
+          color: AppColors.expenseOther,
+        );
         color = AppColors.expenseOther;
     }
 

@@ -1,0 +1,7 @@
+app:
+  name: AutoAssist
+  packageName: com.rivorya.otoasistanapp
+  bundleId: com.rivorya.otoasistanapp
+
+model: xai/grok-4-1-fast-reasoning
+env: dev

@@ -6,7 +6,7 @@ import '../features/home/views/home_view.dart';
 import '../features/garage/views/garage_view.dart';
 import '../features/expenses/views/expenses_view.dart';
 import '../features/reminders/views/reminders_view.dart';
-import '../features/map/views/map_view.dart';
+import '../features/forum/views/forum_view.dart';
 import '../features/garage/viewmodels/garage_viewmodel.dart';
 import '../features/settings/views/settings_view.dart';
 import 'dart:ui';
@@ -48,7 +48,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
             onNavigateToReminders: () => _navigateToTab(3),
           ),
           const GarageView(),
-          const MapView(),
+          const ForumView(),
           ListenableBuilder(
             listenable: _garageVM,
             builder: (context, _) {
@@ -179,14 +179,14 @@ class _BottomNavShellState extends State<BottomNavShell> {
                   ),
                   _buildNavItem(
                     2,
-                    iconoir.MapsArrow(
+                    iconoir.ChatBubbleEmpty(
                       width: 24,
                       height: 24,
                       color: _currentIndex == 2
                           ? AppColors.accentBlue
                           : AppColors.textTertiary,
                     ),
-                    'Harita',
+                    'Forum',
                   ),
                   _buildNavItem(
                     3,

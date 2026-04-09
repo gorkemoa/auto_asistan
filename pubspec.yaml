@@ -54,6 +54,7 @@ dependencies:
   flutter_chat_types: ^3.6.2
   flutter_chat_core: ^2.9.0
   liquid_glass_renderer: ^0.2.0-dev.4
+  flutter_svg: ^2.2.4
 
 dev_dependencies:
   flutter_test:

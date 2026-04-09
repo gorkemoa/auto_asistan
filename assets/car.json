@@ -1,0 +1,802 @@
+[
+    {
+        "id": 1,
+        "code": 3,
+        "brand": "ALFA ROMEO"
+    },
+    {
+        "id": 2,
+        "code": 8,
+        "brand": "ASTON MARTIN"
+    },
+    {
+        "id": 3,
+        "code": 9,
+        "brand": "AUDI"
+    },
+    {
+        "id": 4,
+        "code": 18,
+        "brand": "SAAB"
+    },
+    {
+        "id": 5,
+        "code": 19,
+        "brand": "SEAT"
+    },
+    {
+        "id": 6,
+        "code": 21,
+        "brand": "BMW"
+    },
+    {
+        "id": 7,
+        "code": 25,
+        "brand": "BUICK"
+    },
+    {
+        "id": 8,
+        "code": 27,
+        "brand": "BMC"
+    },
+    {
+        "id": 9,
+        "code": 30,
+        "brand": "DAEWOO"
+    },
+    {
+        "id": 10,
+        "code": 31,
+        "brand": "CADILLAC"
+    },
+    {
+        "id": 11,
+        "code": 32,
+        "brand": "CHEVROLET"
+    },
+    {
+        "id": 12,
+        "code": 33,
+        "brand": "CHRYSLER"
+    },
+    {
+        "id": 13,
+        "code": 34,
+        "brand": "CITROEN"
+    },
+    {
+        "id": 14,
+        "code": 40,
+        "brand": "DAF"
+    },
+    {
+        "id": 15,
+        "code": 43,
+        "brand": "DAIHATSU"
+    },
+    {
+        "id": 16,
+        "code": 45,
+        "brand": "DODGE/USA"
+    },
+    {
+        "id": 17,
+        "code": 50,
+        "brand": "FERRARI"
+    },
+    {
+        "id": 18,
+        "code": 52,
+        "brand": "FIAT"
+    },
+    {
+        "id": 19,
+        "code": 53,
+        "brand": "FORD/OTOSAN"
+    },
+    {
+        "id": 20,
+        "code": 61,
+        "brand": "HONDA"
+    },
+    {
+        "id": 21,
+        "code": 66,
+        "brand": "ISUZU"
+    },
+    {
+        "id": 22,
+        "code": 80,
+        "brand": "LANCIA"
+    },
+    {
+        "id": 23,
+        "code": 82,
+        "brand": "LINCOLN"
+    },
+    {
+        "id": 24,
+        "code": 83,
+        "brand": "LADA"
+    },
+    {
+        "id": 25,
+        "code": 86,
+        "brand": "MASERATI"
+    },
+    {
+        "id": 26,
+        "code": 89,
+        "brand": "MAZDA"
+    },
+    {
+        "id": 27,
+        "code": 90,
+        "brand": "MERCEDES"
+    },
+    {
+        "id": 28,
+        "code": 91,
+        "brand": "MERCURY"
+    },
+    {
+        "id": 29,
+        "code": 94,
+        "brand": "MITSUBISHI"
+    },
+    {
+        "id": 30,
+        "code": 100,
+        "brand": "TOFAS-FIAT"
+    },
+    {
+        "id": 31,
+        "code": 101,
+        "brand": "OTOKAR/MAGIRUS"
+    },
+    {
+        "id": 32,
+        "code": 107,
+        "brand": "NISSAN"
+    },
+    {
+        "id": 33,
+        "code": 111,
+        "brand": "OPEL"
+    },
+    {
+        "id": 34,
+        "code": 114,
+        "brand": "PEUGEOT"
+    },
+    {
+        "id": 35,
+        "code": 117,
+        "brand": "PONTIAC"
+    },
+    {
+        "id": 36,
+        "code": 118,
+        "brand": "PORSCHE"
+    },
+    {
+        "id": 37,
+        "code": 119,
+        "brand": "TATA"
+    },
+    {
+        "id": 38,
+        "code": 122,
+        "brand": "RENAULT (OYAK)"
+    },
+    {
+        "id": 39,
+        "code": 123,
+        "brand": "RENAULT"
+    },
+    {
+        "id": 40,
+        "code": 125,
+        "brand": "RANGE ROVER"
+    },
+    {
+        "id": 41,
+        "code": 128,
+        "brand": "SSANGYONG"
+    },
+    {
+        "id": 42,
+        "code": 130,
+        "brand": "SUZUKI"
+    },
+    {
+        "id": 43,
+        "code": 133,
+        "brand": "SKODA"
+    },
+    {
+        "id": 44,
+        "code": 137,
+        "brand": "SUBARU"
+    },
+    {
+        "id": 45,
+        "code": 138,
+        "brand": "SCANIA"
+    },
+    {
+        "id": 46,
+        "code": 144,
+        "brand": "TOYOTA"
+    },
+    {
+        "id": 47,
+        "code": 153,
+        "brand": "VOLKSWAGEN"
+    },
+    {
+        "id": 48,
+        "code": 154,
+        "brand": "VOLVO"
+    },
+    {
+        "id": 49,
+        "code": 175,
+        "brand": "FORD /USA"
+    },
+    {
+        "id": 50,
+        "code": 177,
+        "brand": "HYUNDAI"
+    },
+    {
+        "id": 51,
+        "code": 220,
+        "brand": "JAGUAR"
+    },
+    {
+        "id": 52,
+        "code": 225,
+        "brand": "JAC"
+    },
+    {
+        "id": 53,
+        "code": 230,
+        "brand": "GULERYUZ"
+    },
+    {
+        "id": 54,
+        "code": 235,
+        "brand": "LAMBORGHINI"
+    },
+    {
+        "id": 55,
+        "code": 245,
+        "brand": "LOTUS"
+    },
+    {
+        "id": 56,
+        "code": 275,
+        "brand": "MORGAN"
+    },
+    {
+        "id": 57,
+        "code": 320,
+        "brand": "PROTON"
+    },
+    {
+        "id": 58,
+        "code": 360,
+        "brand": "MAN"
+    },
+    {
+        "id": 59,
+        "code": 400,
+        "brand": "ZIRAI TRAKTOR"
+    },
+    {
+        "id": 60,
+        "code": 410,
+        "brand": "VOLVO-TR"
+    },
+    {
+        "id": 61,
+        "code": 420,
+        "brand": "LAND ROVER"
+    },
+    {
+        "id": 62,
+        "code": 421,
+        "brand": "MINI"
+    },
+    {
+        "id": 63,
+        "code": 440,
+        "brand": "NEOPLAN"
+    },
+    {
+        "id": 64,
+        "code": 445,
+        "brand": "DACIA"
+    },
+    {
+        "id": 65,
+        "code": 450,
+        "brand": "SETRA"
+    },
+    {
+        "id": 66,
+        "code": 451,
+        "brand": "SMART"
+    },
+    {
+        "id": 67,
+        "code": 452,
+        "brand": "CATERHAM"
+    },
+    {
+        "id": 68,
+        "code": 453,
+        "brand": "INFINITI"
+    },
+    {
+        "id": 69,
+        "code": 454,
+        "brand": "TESLA"
+    },
+    {
+        "id": 70,
+        "code": 455,
+        "brand": "KTM"
+    },
+    {
+        "id": 71,
+        "code": 456,
+        "brand": "CHANGAN"
+    },
+    {
+        "id": 72,
+        "code": 457,
+        "brand": "FISKER"
+    },
+    {
+        "id": 73,
+        "code": 458,
+        "brand": "SHUANGHUAN"
+    },
+    {
+        "id": 74,
+        "code": 459,
+        "brand": "TCV"
+    },
+    {
+        "id": 75,
+        "code": 520,
+        "brand": "OTOYOLIVECOFIAT"
+    },
+    {
+        "id": 76,
+        "code": 550,
+        "brand": "TURKKAR"
+    },
+    {
+        "id": 77,
+        "code": 551,
+        "brand": "TEZELLER"
+    },
+    {
+        "id": 78,
+        "code": 552,
+        "brand": "TEMSA"
+    },
+    {
+        "id": 79,
+        "code": 554,
+        "brand": "ASKAM/FARGO/DESOTO"
+    },
+    {
+        "id": 80,
+        "code": 555,
+        "brand": "HUMMER"
+    },
+    {
+        "id": 81,
+        "code": 556,
+        "brand": "AR-BUS"
+    },
+    {
+        "id": 82,
+        "code": 557,
+        "brand": "IKCO"
+    },
+    {
+        "id": 83,
+        "code": 558,
+        "brand": "BENTLEY"
+    },
+    {
+        "id": 84,
+        "code": 561,
+        "brand": "KARSAN"
+    },
+    {
+        "id": 85,
+        "code": 565,
+        "brand": "PIAGGIO"
+    },
+    {
+        "id": 86,
+        "code": 566,
+        "brand": "HUANGHAI"
+    },
+    {
+        "id": 87,
+        "code": 567,
+        "brand": "VISEON"
+    },
+    {
+        "id": 88,
+        "code": 568,
+        "brand": "KENWORTH"
+    },
+    {
+        "id": 89,
+        "code": 569,
+        "brand": "IRIZAR"
+    },
+    {
+        "id": 90,
+        "code": 570,
+        "brand": "SAIPA"
+    },
+    {
+        "id": 91,
+        "code": 571,
+        "brand": "LEXUS"
+    },
+    {
+        "id": 92,
+        "code": 572,
+        "brand": "SOLARIS"
+    },
+    {
+        "id": 93,
+        "code": 574,
+        "brand": "BOZANKAYA"
+    },
+    {
+        "id": 94,
+        "code": 575,
+        "brand": "MULTICAR"
+    },
+    {
+        "id": 95,
+        "code": 576,
+        "brand": "ADRIA"
+    },
+    {
+        "id": 96,
+        "code": 577,
+        "brand": "HAIMA"
+    },
+    {
+        "id": 97,
+        "code": 578,
+        "brand": "MILLER"
+    },
+    {
+        "id": 98,
+        "code": 579,
+        "brand": "SCHMIDT"
+    },
+    {
+        "id": 99,
+        "code": 580,
+        "brand": "RAVON"
+    },
+    {
+        "id": 100,
+        "code": 581,
+        "brand": "EMT"
+    },
+    {
+        "id": 101,
+        "code": 582,
+        "brand": "ZOTYE"
+    },
+    {
+        "id": 102,
+        "code": 583,
+        "brand": "PILOTCAR"
+    },
+    {
+        "id": 103,
+        "code": 584,
+        "brand": "MCLAREN"
+    },
+    {
+        "id": 104,
+        "code": 587,
+        "brand": "ALPINE"
+    },
+    {
+        "id": 105,
+        "code": 588,
+        "brand": "MG"
+    },
+    {
+        "id": 106,
+        "code": 589,
+        "brand": "XEV"
+    },
+    {
+        "id": 107,
+        "code": 590,
+        "brand": "SERES"
+    },
+    {
+        "id": 108,
+        "code": 591,
+        "brand": "CUPRA"
+    },
+    {
+        "id": 109,
+        "code": 593,
+        "brand": "DONG FENG"
+    },
+    {
+        "id": 110,
+        "code": 594,
+        "brand": "TRUMPCHI/GAC"
+    },
+    {
+        "id": 111,
+        "code": 595,
+        "brand": "ORA"
+    },
+    {
+        "id": 112,
+        "code": 596,
+        "brand": "BRILLIANCE"
+    },
+    {
+        "id": 113,
+        "code": 600,
+        "brand": "MOTORSIKLET"
+    },
+    {
+        "id": 114,
+        "code": 601,
+        "brand": "ALKE"
+    },
+    {
+        "id": 115,
+        "code": 700,
+        "brand": "MEGA"
+    },
+    {
+        "id": 116,
+        "code": 705,
+        "brand": "AIXAM"
+    },
+    {
+        "id": 117,
+        "code": 706,
+        "brand": "FOLKVAN"
+    },
+    {
+        "id": 118,
+        "code": 710,
+        "brand": "PGO"
+    },
+    {
+        "id": 119,
+        "code": 715,
+        "brand": "MJT"
+    },
+    {
+        "id": 120,
+        "code": 716,
+        "brand": "SCAM"
+    },
+    {
+        "id": 121,
+        "code": 717,
+        "brand": "DFM"
+    },
+    {
+        "id": 122,
+        "code": 718,
+        "brand": "HFKANUNI"
+    },
+    {
+        "id": 123,
+        "code": 720,
+        "brand": "MAHINDRA"
+    },
+    {
+        "id": 124,
+        "code": 721,
+        "brand": "CHERY"
+    },
+    {
+        "id": 125,
+        "code": 722,
+        "brand": "TURKAR"
+    },
+    {
+        "id": 126,
+        "code": 723,
+        "brand": "KOENIGSEGG"
+    },
+    {
+        "id": 127,
+        "code": 724,
+        "brand": "GONOW"
+    },
+    {
+        "id": 128,
+        "code": 725,
+        "brand": "ASTRA"
+    },
+    {
+        "id": 129,
+        "code": 726,
+        "brand": "AVIA"
+    },
+    {
+        "id": 130,
+        "code": 727,
+        "brand": "VEICOLI"
+    },
+    {
+        "id": 131,
+        "code": 728,
+        "brand": "SINOTRUK"
+    },
+    {
+        "id": 132,
+        "code": 729,
+        "brand": "BREDAMENARIBUS"
+    },
+    {
+        "id": 133,
+        "code": 730,
+        "brand": "MAYBACH"
+    },
+    {
+        "id": 134,
+        "code": 731,
+        "brand": "PETERBILT"
+    },
+    {
+        "id": 135,
+        "code": 732,
+        "brand": "WIESMANN"
+    },
+    {
+        "id": 136,
+        "code": 733,
+        "brand": "HYMER"
+    },
+    {
+        "id": 137,
+        "code": 734,
+        "brand": "ROLLS-ROYCE"
+    },
+    {
+        "id": 138,
+        "code": 736,
+        "brand": "AKIA"
+    },
+    {
+        "id": 139,
+        "code": 737,
+        "brand": "THE LONDON TAXI"
+    },
+    {
+        "id": 140,
+        "code": 738,
+        "brand": "GREAT WALL"
+    },
+    {
+        "id": 141,
+        "code": 739,
+        "brand": "GROVE"
+    },
+    {
+        "id": 142,
+        "code": 740,
+        "brand": "HISCAR"
+    },
+    {
+        "id": 143,
+        "code": 741,
+        "brand": "BYD"
+    },
+    {
+        "id": 144,
+        "code": 742,
+        "brand": "ZOOMLION"
+    },
+    {
+        "id": 145,
+        "code": 743,
+        "brand": "CODA"
+    },
+    {
+        "id": 146,
+        "code": 744,
+        "brand": "TATRA"
+    },
+    {
+        "id": 147,
+        "code": 745,
+        "brand": "TADANO FAUN"
+    },
+    {
+        "id": 148,
+        "code": 746,
+        "brand": "MENARINIBUS"
+    },
+    {
+        "id": 149,
+        "code": 747,
+        "brand": "PIMAKINA"
+    },
+    {
+        "id": 150,
+        "code": 748,
+        "brand": "DS"
+    },
+    {
+        "id": 151,
+        "code": 749,
+        "brand": "MAZ"
+    },
+    {
+        "id": 152,
+        "code": 750,
+        "brand": "SKYWELL"
+    },
+    {
+        "id": 153,
+        "code": 800,
+        "brand": "KIA"
+    },
+    {
+        "id": 154,
+        "code": 801,
+        "brand": "BUGATTI"
+    },
+    {
+        "id": 155,
+        "code": 802,
+        "brand": "GEELY"
+    },
+    {
+        "id": 156,
+        "code": 803,
+        "brand": "FAW"
+    },
+    {
+        "id": 157,
+        "code": 804,
+        "brand": "ISOBUS"
+    },
+    {
+        "id": 158,
+        "code": 806,
+        "brand": "DFSK"
+    },
+    {
+        "id": 159,
+        "code": 820,
+        "brand": "GMC"
+    },
+    {
+        "id": 160,
+        "code": 825,
+        "brand": "GAZ"
+    }
+]
